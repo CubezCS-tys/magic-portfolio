@@ -7,7 +7,7 @@ image: "/images/projects/project-01/cover-01.jpg"
 
 ## Introduction
 
-For nearly two years, I supported undergraduate modules in Mathematical Programming, Fundamentals of Mathematics, and Statistics at Brunel University London. Teaching 150+ students taught me as much as it taught them—particularly about communication, debugging, and the gap between theory and practice.
+For nearly two years, I supported undergraduate modules in Mathematical Programming, Fundamentals of Mathematics, and Statistics at Brunel University London. Teaching 150+ students taught me as much as it taught them-particularly about communication, debugging, and the gap between theory and practice.
 
 ## The Challenge
 
@@ -39,7 +39,7 @@ x = A \ b;  % "Magic backslash operator"
 
 ### 2. Debugging is a Skill That Needs Teaching
 
-Most errors students made weren't conceptual—they were mechanical:
+Most errors students made weren't conceptual-they were mechanical:
 
 **Common MATLAB mistakes**:
 ```matlab
@@ -155,7 +155,7 @@ Stop and ask: "Is this the right formula?"
 
 **Why it works**:
 - Students spot the mistake
-- Reinforces correct formula: $s^2 = \frac{1}{n-1}\sum(x_i - \bar{x})^2$
+- Reinforces correct formula: variance = sum of squared deviations / (n-1)
 - Teaches debugging mindset
 
 ### 2. Progressive Complexity
@@ -293,7 +293,7 @@ What's obvious to you isn't obvious to beginners. Remember your own journey:
 
 ### 3. Give Feedback That Helps
 **Not helpful**: "This is wrong"
-**Helpful**: "Your logic is correct, but check line 15—what happens when x=0?"
+**Helpful**: "Your logic is correct, but check line 15-what happens when x=0?"
 
 ### 4. Build a Library of Explanations
 Keep track of:
@@ -323,7 +323,7 @@ Teaching improved my:
 
 ## Conclusion
 
-Teaching 150+ students wasn't just about helping them learn MATLAB and statistics—it made me a better engineer, communicator, and problem-solver.
+Teaching 150+ students wasn't just about helping them learn MATLAB and statistics-it made me a better engineer, communicator, and problem-solver.
 
 **Key takeaways**:
 - Communication is a technical skill worth developing

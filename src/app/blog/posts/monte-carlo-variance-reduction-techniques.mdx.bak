@@ -7,7 +7,7 @@ image: "/images/projects/project-01/cover-01.jpg"
 
 ## Introduction
 
-Monte Carlo simulation is a powerful tool in quantitative finance, but raw implementations can be computationally expensive. Variance reduction techniques can dramatically improve efficiency—sometimes reducing required paths by 40% or more while maintaining the same accuracy.
+Monte Carlo simulation is a powerful tool in quantitative finance, but raw implementations can be computationally expensive. Variance reduction techniques can dramatically improve efficiency - sometimes reducing required paths by 40% or more while maintaining the same accuracy.
 
 ## The Problem with Naive Monte Carlo
 
@@ -17,13 +17,13 @@ $$
 \hat{V} = \frac{1}{N}\sum_{i=1}^{N} f(S_i)
 $$
 
-The standard error decreases as $\frac{1}{\sqrt{N}}$, meaning we need to quadruple the paths to halve the error. This is expensive.
+The standard error decreases as 1/√N, meaning we need to quadruple the paths to halve the error. This is expensive.
 
 ## Variance Reduction Techniques
 
 ### 1. Antithetic Variates
 
-**Concept**: For each random draw $Z$, also simulate $-Z$.
+**Concept**: For each random draw Z, also simulate -Z.
 
 **Implementation**:
 ```python
@@ -56,7 +56,7 @@ $$
 $$
 
 **Implementation strategy**:
-1. Run pilot simulation to estimate $\beta^*$
+1. Run pilot simulation to estimate optimal beta
 2. Use estimated coefficient in main simulation
 3. Verify variance reduction
 
@@ -80,7 +80,7 @@ $$
 
 **Concept**: Ensure uniform coverage of probability space.
 
-Divide $[0,1]$ into $k$ strata and sample from each:
+Divide the interval [0,1] into k strata and sample from each:
 
 $$
 U_i \sim \text{Uniform}\left(\frac{i-1}{k}, \frac{i}{k}\right), \quad i=1,\ldots,k
@@ -185,7 +185,7 @@ metrics = {
 
 ## Conclusion
 
-Variance reduction isn't just an academic exercise—it's a practical necessity for production systems. The techniques covered here can:
+Variance reduction is not just an academic exercise - it is a practical necessity for production systems. The techniques covered here can:
 - Reduce computational cost by 5-10x
 - Enable real-time pricing for complex products
 - Improve risk management accuracy
