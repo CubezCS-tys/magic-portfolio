@@ -1,0 +1,81 @@
+---
+title: "Building a RAG System for Arabic Documents at Scale"
+publishedAt: "2025-06-15"
+summary: "Lessons learned from developing a large-scale retrieval-augmented generation platform for millions of Arabic documents, achieving 2.3× speedup and 90% latency reduction."
+image: "/images/projects/project-01/cover-03.jpg"
+---
+
+## Introduction
+
+Building AI systems that work with non-English languages presents unique challenges, especially at scale. In my role at Arabic Publishing Group, I developed a Retrieval-Augmented Generation (RAG) platform that processes millions of Arabic documents, and I want to share some key insights from this journey.
+
+## The Challenge
+
+Arabic text processing comes with specific challenges:
+- Right-to-left text direction
+- Complex morphology and diacritics
+- Limited pre-trained models compared to English
+- Need for semantic search across millions of documents
+
+## Architecture Decisions
+
+### 1. Data Pipeline Design
+
+We built scalable pipelines that convert unstructured Arabic documents to JSON datasets. Key considerations:
+
+- **Chunking strategy**: Optimized chunk sizes for Arabic text (different from English due to morphological complexity)
+- **Embedding models**: Fine-tuned multilingual models for Arabic semantic understanding
+- **Vectorization**: Efficient encoding for similarity search
+
+### 2. Distributed Database Infrastructure
+
+Deployed both FAISS and Milvus for vector search:
+
+- **FAISS**: For rapid prototyping and smaller-scale deployments
+- **Milvus**: For production-grade distributed search
+- Implemented caching layers to minimize repeated computations
+
+### 3. Performance Optimization
+
+Achieved significant performance improvements:
+
+- **2.3× retrieval speedup** through query batching
+- **90% latency reduction** via parallelization
+- Statistical error monitoring for robustness
+
+## Key Lessons
+
+### 1. Query Optimization Matters
+
+Query batching and parallel processing had the most significant impact on performance. Don't optimize embeddings before optimizing queries.
+
+### 2. Monitoring is Critical
+
+Real-time dashboards for latency, throughput, and query statistics enabled data-driven optimizations. What you can't measure, you can't improve.
+
+### 3. Fail-Safe Mechanisms
+
+Redundancy across distributed nodes and statistical error monitoring prevented cascading failures in production.
+
+## Technical Stack
+
+- **Vector Databases**: FAISS, Milvus
+- **Framework**: Python with custom data pipelines
+- **Monitoring**: Custom analytics dashboards
+- **Infrastructure**: Distributed architecture with caching
+
+## Results
+
+The system now powers AI-assisted research across millions of documents with:
+- Sub-second query latency for most searches
+- High reliability through redundancy mechanisms
+- Scalable architecture supporting growing document collections
+
+## Future Directions
+
+We're exploring:
+- Hybrid search combining dense and sparse retrieval
+- Multi-modal document understanding
+- Advanced query understanding for complex research questions
+
+Building at scale teaches you that engineering decisions matter as much as model selection. Performance optimization is about understanding your bottlenecks and making targeted improvements.

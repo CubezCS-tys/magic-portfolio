@@ -2,20 +2,20 @@ import { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/
 import { Line, Logo, Row, Text } from "@once-ui-system/core";
 
 const person: Person = {
-  firstName: "Selene",
-  lastName: "Yu",
-  name: `Selene Yu`,
-  role: "Design Engineer",
+  firstName: "Tahar Yassine",
+  lastName: "Soltani",
+  name: `Tahar Yassine Soltani`,
+  role: "Full-Stack AI Engineer & Quantitative Developer",
   avatar: "/images/avatar.jpg",
-  email: "example@gmail.com",
-  location: "Asia/Jakarta", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
-  languages: ["English", "Bahasa"], // optional: Leave the array empty if you don't want to display languages
+  email: "ysolta1969@gmail.com",
+  location: "Europe/London", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
+  languages: ["English", "French", "Arabic"], // optional: Leave the array empty if you don't want to display languages
 };
 
 const newsletter: Newsletter = {
-  display: true,
+  display: false,
   title: <>Subscribe to {person.firstName}'s Newsletter</>,
-  description: <>My weekly newsletter about creativity and engineering</>,
+  description: <>My weekly newsletter about AI engineering and quantitative finance</>,
 };
 
 const social: Social = [
@@ -24,17 +24,17 @@ const social: Social = [
   {
     name: "GitHub",
     icon: "github",
-    link: "https://github.com/once-ui-system",
+    link: "https://github.com/CubezCS-sys",
   },
   {
     name: "LinkedIn",
     icon: "linkedin",
-    link: "https://www.linkedin.com/company/once-ui/",
+    link: "https://linkedin.com/in/tahar-yassine-soltani",
   },
   {
-    name: "Threads",
-    icon: "threads",
-    link: "https://www.threads.com/@once_ui",
+    name: "Portfolio",
+    icon: "link",
+    link: "https://barrier-options.streamlit.app",
   },
   {
     name: "Email",
@@ -49,30 +49,24 @@ const home: Home = {
   label: "Home",
   title: `${person.name}'s Portfolio`,
   description: `Portfolio website showcasing my work as a ${person.role}`,
-  headline: <>Building bridges between design and code</>,
+  headline: <>Building intelligent systems for quantitative finance</>,
   featured: {
     display: true,
     title: (
       <Row gap="12" vertical="center">
-        <strong className="ml-4">Once UI</strong>{" "}
+        <strong className="ml-4">Barrier Options</strong>{" "}
         <Line background="brand-alpha-strong" vert height="20" />
         <Text marginRight="4" onBackground="brand-medium">
           Featured work
         </Text>
       </Row>
     ),
-    href: "/work/building-once-ui-a-customizable-design-system",
+    href: "/work/pricing-barrier-options-research-computational-finance",
   },
   subline: (
     <>
-      I'm Selene, a design engineer at{" "}
-      <Logo
-        dark
-        icon="/trademarks/wordmark-dark.svg"
-        style={{ display: "inline-flex", top: "0.25em", marginLeft: "-0.25em" }}
-      />
-      , where I craft intuitive
-      <br /> user experiences. After hours, I build my own projects.
+      I'm Tahar Yassine, a full-stack AI engineer and quantitative developer currently pursuing my MSc in Financial Mathematics at King's College London.
+      <br /> I specialize in building AI-powered systems, algorithmic trading engines, and computational finance solutions.
     </>
   ),
 };
@@ -98,9 +92,10 @@ const about: About = {
     title: "Introduction",
     description: (
       <>
-        Selene is a Jakarta-based design engineer with a passion for transforming complex challenges
-        into simple, elegant design solutions. Her work spans digital interfaces, interactive
-        experiences, and the convergence of design and technology.
+        Tahar Yassine is a London-based AI engineer and quantitative developer with expertise in computational finance, 
+        machine learning, and distributed systems. Currently pursuing an MSc in Financial Mathematics at King's College London, 
+        he combines strong mathematical foundations with practical software engineering to build scalable AI-powered solutions 
+        for finance and research applications.
       </>
     ),
   },
@@ -109,41 +104,44 @@ const about: About = {
     title: "Work Experience",
     experiences: [
       {
-        company: "FLY",
-        timeframe: "2022 - Present",
-        role: "Senior Design Engineer",
+        company: "Arabic Publishing Group (RAG Platform)",
+        timeframe: "Jun 2025 - Present",
+        role: "Full-Stack AI Engineer",
         achievements: [
           <>
-            Redesigned the UI/UX for the FLY platform, resulting in a 20% increase in user
-            engagement and 30% faster load times.
+            Developed a large-scale retrieval-augmented generation (RAG) platform powering AI-assisted research across millions of Arabic documents.
           </>,
           <>
-            Spearheaded the integration of AI tools into design workflows, enabling designers to
-            iterate 50% faster.
+            Built scalable pipelines converting unstructured data to JSON datasets; optimised chunking, embedding, and vectorisation for retrieval efficiency.
+          </>,
+          <>
+            Deployed distributed databases (FAISS, Milvus) and engineered low-latency similarity-search infrastructure with caching and query optimisation.
+          </>,
+          <>
+            Achieved 2.3× retrieval speedup and 90% latency reduction through query batching and parallelisation.
+          </>,
+          <>
+            Created fail-safe analytics dashboards for monitoring latency, throughput and query statistics, enabling data-driven system optimisation.
+          </>,
+          <>
+            Strengthened robustness via statistical error monitoring and redundancy mechanisms across distributed nodes.
           </>,
         ],
-        images: [
-          // optional: leave the array empty if you don't want to display images
-          {
-            src: "/images/projects/project-01/cover-01.jpg",
-            alt: "Once UI Project",
-            width: 16,
-            height: 9,
-          },
-        ],
+        images: [],
       },
       {
-        company: "Creativ3",
-        timeframe: "2018 - 2022",
-        role: "Lead Designer",
+        company: "Brunel University London",
+        timeframe: "Sept 2023 - Apr 2025",
+        role: "Teaching Assistant",
         achievements: [
           <>
-            Developed a design system that unified the brand across multiple platforms, improving
-            design consistency by 40%.
+            Supported undergraduate modules in Mathematical Programming, Fundamentals of Mathematics, and Statistics.
           </>,
           <>
-            Led a cross-functional team to launch a new product line, contributing to a 15% increase
-            in overall company revenue.
+            Led MATLAB and R sessions, reinforcing numerical computation and stochastic process problem-solving.
+          </>,
+          <>
+            Provided individual support and formative feedback to over 150 students, improving quantitative reasoning and programming fluency.
           </>,
         ],
         images: [],
@@ -152,78 +150,86 @@ const about: About = {
   },
   studies: {
     display: true, // set to false to hide this section
-    title: "Studies",
+    title: "Education",
     institutions: [
       {
-        name: "University of Jakarta",
-        description: <>Studied software engineering.</>,
+        name: "King's College London",
+        description: <>MSc Financial Mathematics (Sept 2025 - Sept 2026) - Selected coursework: Risk-Neutral Valuation, Stochastic Analysis, Numerical Methods in Finance, C++ for Financial Mathematics, Machine Learning, and Stochastic Control. Focus areas: derivative pricing, quantitative risk management, and algorithmic optimisation.</>,
       },
       {
-        name: "Build the Future",
-        description: <>Studied online marketing and personal branding.</>,
+        name: "Brunel University of London",
+        description: <>BSc (Hons) Mathematics with Computer Science (Sept 2022 - Jun 2025) - First Class Honours (82% Average). Relevant coursework: PDEs, Numerical Analysis, Stochastic Processes, Artificial Intelligence, Software Engineering. Planned dissertation: Numerical methods for stochastic volatility models in derivative pricing.</>,
       },
     ],
   },
   technical: {
     display: true, // set to false to hide this section
-    title: "Technical skills",
+    title: "Technical Skills",
     skills: [
       {
-        title: "Figma",
+        title: "Programming Languages",
         description: (
-          <>Able to prototype in Figma with Once UI with unnatural speed.</>
+          <>Proficient in Python, C++, MATLAB, R, SQL, Java, and Git for quantitative development and data analysis.</>
         ),
         tags: [
           {
-            name: "Figma",
-            icon: "figma",
-          },
-        ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
-          {
-            src: "/images/projects/project-01/cover-02.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
+            name: "Python",
+            icon: "python",
           },
           {
-            src: "/images/projects/project-01/cover-03.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
+            name: "C++",
+            icon: "code",
           },
-        ],
-      },
-      {
-        title: "Next.js",
-        description: (
-          <>Building next gen apps with Next.js + Once UI + Supabase.</>
-        ),
-        tags: [
           {
             name: "JavaScript",
             icon: "javascript",
           },
+        ],
+        images: [],
+      },
+      {
+        title: "AI & Machine Learning",
+        description: (
+          <>Experienced with NumPy, Pandas, SciPy, QuantLib, PyTorch, TensorFlow, Scikit-learn for quantitative modeling and ML applications.</>
+        ),
+        tags: [
           {
-            name: "Next.js",
-            icon: "nextjs",
+            name: "PyTorch",
+            icon: "code",
           },
           {
-            name: "Supabase",
-            icon: "supabase",
+            name: "TensorFlow",
+            icon: "code",
           },
         ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
+        images: [],
+      },
+      {
+        title: "Data Infrastructure",
+        description: (
+          <>Built distributed systems with Streamlit, Flask, Plotly, Matplotlib, FAISS, and Milvus for real-time analytics and vector search.</>
+        ),
+        tags: [
           {
-            src: "/images/projects/project-01/cover-04.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
+            name: "Database",
+            icon: "database",
           },
         ],
-      },  
+        images: [],
+      },
+      {
+        title: "Systems & DevOps",
+        description: (
+          <>Developed on Linux (Ubuntu) and Windows environments with strong command-line proficiency.</>
+        ),
+        tags: [
+          {
+            name: "Linux",
+            icon: "terminal",
+          },
+        ],
+        images: [],
+      },
     ],
   },
 };
@@ -231,8 +237,8 @@ const about: About = {
 const blog: Blog = {
   path: "/blog",
   label: "Blog",
-  title: "Writing about design and tech...",
-  description: `Read what ${person.name} has been up to recently`,
+  title: "Insights on AI Engineering, Quantitative Finance & Software Development",
+  description: `Exploring machine learning systems, computational finance, numerical methods, and lessons from building production AI applications`,
   // Create new blog posts by adding a new .mdx file to app/blog/posts
   // All posts will be listed on the /blog route
 };

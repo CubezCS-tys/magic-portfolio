@@ -1,0 +1,345 @@
+---
+title: "Lessons from Teaching 150+ Students: Math, Code, and Communication"
+publishedAt: "2024-11-05"
+summary: "Reflections on teaching mathematical programming and statistics at university, and what I learned about effective technical communication."
+image: "/images/projects/project-01/cover-01.jpg"
+---
+
+## Introduction
+
+For nearly two years, I supported undergraduate modules in Mathematical Programming, Fundamentals of Mathematics, and Statistics at Brunel University London. Teaching 150+ students taught me as much as it taught them—particularly about communication, debugging, and the gap between theory and practice.
+
+## The Challenge
+
+Students came with diverse backgrounds:
+- Some had strong programming skills, weak math
+- Others had strong math foundations, never coded
+- Many struggled with both
+- All needed to understand **why**, not just **how**
+
+## Key Lessons
+
+### 1. Abstractions Hide Complexity (That's the Problem)
+
+**The Issue**:
+```matlab
+% What students see
+A = [1 2; 3 4];
+b = [5; 6];
+x = A \ b;  % "Magic backslash operator"
+```
+
+**What's actually happening**:
+- Matrix factorization (LU, QR, or Cholesky)
+- Forward/backward substitution
+- Numerical stability considerations
+- Complexity: O(n³) for general matrices
+
+**The lesson**: Don't skip fundamentals. Understanding the "magic" helps debug when it fails.
+
+### 2. Debugging is a Skill That Needs Teaching
+
+Most errors students made weren't conceptual—they were mechanical:
+
+**Common MATLAB mistakes**:
+```matlab
+% Mistake 1: Array vs matrix multiplication
+A * B    % Matrix multiplication
+A .* B   % Element-wise multiplication
+
+% Mistake 2: Row vs column vectors
+x = [1 2 3]     % Row vector (1×3)
+x = [1; 2; 3]   % Column vector (3×1)
+
+% Mistake 3: Indexing from 1, not 0
+x(0)  % Error!
+x(1)  % First element
+```
+
+**Teaching debugging systematically**:
+1. Read the error message
+2. Identify the line number
+3. Check variable dimensions
+4. Print intermediate values
+5. Simplify to minimal example
+
+### 3. Examples Trump Theory (Initially)
+
+**Traditional approach**:
+```
+1. Define stochastic process mathematically
+2. Derive properties
+3. Show example
+4. Student confusion
+```
+
+**More effective approach**:
+```
+1. Show concrete example (e.g., stock prices)
+2. Simulate in MATLAB
+3. Observe properties
+4. Connect to mathematical theory
+5. Student understanding
+```
+
+**Example: Random Walks**
+
+Instead of starting with:
+$$
+S_n = S_0 + \sum_{i=1}^n X_i, \quad X_i \sim N(0, 1)
+$$
+
+Start with:
+```matlab
+% Simulate a random walk
+n_steps = 1000;
+steps = randn(n_steps, 1);  % Random steps
+position = cumsum(steps);    % Cumulative sum
+
+plot(position);
+title('Random Walk - Like a Drunk Person Walking');
+```
+
+**Then** introduce the math. Motivation matters.
+
+### 4. The "Five Why's" of Student Questions
+
+When students asked "Why doesn't this work?", I learned to dig deeper:
+
+**Surface question**: "Why is my code giving wrong answers?"
+
+**Actual issues** (discovered through questioning):
+1. "What did you expect?" → Student didn't know
+2. "How did you test it?" → Student didn't test
+3. "What's the formula?" → Student misunderstood math
+4. "What are the variable values?" → Student didn't check
+5. "What's the data type?" → Ah, integer division!
+
+**The insight**: Questions often mask deeper confusion.
+
+### 5. Different Students Need Different Explanations
+
+**For math-strong students**:
+- Start with theory
+- Provide formal definitions
+- Connect to broader mathematical concepts
+
+**For code-strong students**:
+- Start with implementation
+- Show computational complexity
+- Relate to software engineering patterns
+
+**For struggling students**:
+- Visual analogies
+- Concrete examples
+- Incremental building blocks
+
+**The key**: Prepare multiple explanations for the same concept.
+
+## Effective Teaching Techniques
+
+### 1. Live Coding (With Intentional Mistakes)
+
+```matlab
+% Demo: Compute mean and variance
+data = [1, 2, 3, 4, 5];
+
+% Intentional mistake
+mean_val = sum(data) / length(data);  % Correct
+var_val = sum(data.^2) / length(data) - mean_val^2;  % Biased!
+
+fprintf('Variance: %.2f\n', var_val);
+```
+
+Stop and ask: "Is this the right formula?"
+
+**Why it works**:
+- Students spot the mistake
+- Reinforces correct formula: $s^2 = \frac{1}{n-1}\sum(x_i - \bar{x})^2$
+- Teaches debugging mindset
+
+### 2. Progressive Complexity
+
+**Week 1**: Scalar operations
+```matlab
+x = 5;
+y = 3;
+z = x + y;
+```
+
+**Week 4**: Vector operations
+```matlab
+x = [1, 2, 3, 4, 5];
+y = x.^2;  % Element-wise square
+```
+
+**Week 8**: Matrix operations
+```matlab
+A = rand(100, 100);
+eigenvalues = eig(A);
+```
+
+**Week 12**: Full simulation
+```matlab
+function price = monte_carlo_option(S0, K, r, sigma, T, n_sims)
+    dt = T / 252;
+    price_paths = zeros(n_sims, 1);
+    
+    for i = 1:n_sims
+        S = S0;
+        for t = 1:252
+            S = S * exp((r - 0.5*sigma^2)*dt + sigma*sqrt(dt)*randn());
+        end
+        price_paths(i) = max(S - K, 0);
+    end
+    
+    price = exp(-r*T) * mean(price_paths);
+end
+```
+
+Each week built on previous concepts.
+
+### 3. Real-World Connections
+
+**Abstract**: "We're studying stochastic processes"
+
+**Concrete**: "This is how option pricing works in finance"
+
+**Motivation**: Students see **why** they're learning this
+
+**Example connections**:
+- Numerical analysis → Engineering simulations
+- Statistics → A/B testing at tech companies
+- Stochastic processes → Algorithmic trading
+- Linear algebra → Machine learning
+
+### 4. Office Hours as Debugging Sessions
+
+Best office hour format:
+1. Student explains their approach
+2. I ask questions (don't give answers)
+3. Student discovers their mistake
+4. We generalize the lesson
+
+**Example dialogue**:
+- **Student**: "My Monte Carlo simulation gives weird results"
+- **Me**: "What's weird about them?"
+- **Student**: "Negative option prices"
+- **Me**: "Can option prices be negative?"
+- **Student**: "No... oh! I forgot the max(S-K, 0)"
+
+Learning by discovery >> learning by telling.
+
+## What I Learned
+
+### 1. Communication is a Technical Skill
+
+Writing clear documentation, explaining complex concepts, and teaching others made me a better engineer.
+
+**Before teaching**:
+```python
+# Calculate stuff
+x = np.dot(a, b) + c
+```
+
+**After teaching**:
+```python
+def calculate_risk_adjusted_return(returns, risk_free_rate, covariance):
+    """
+    Compute Sharpe ratio using portfolio theory.
+    
+    Args:
+        returns: Expected portfolio returns
+        risk_free_rate: Risk-free rate of return
+        covariance: Return covariance matrix
+        
+    Returns:
+        Sharpe ratio (risk-adjusted return metric)
+    """
+    excess_return = returns - risk_free_rate
+    portfolio_variance = np.dot(np.dot(excess_return.T, covariance), excess_return)
+    return excess_return / np.sqrt(portfolio_variance)
+```
+
+### 2. Understanding Deepens Through Teaching
+
+Preparing to explain:
+- Forces you to truly understand
+- Reveals gaps in your knowledge
+- Builds mental models
+
+**Example**: I thought I understood Monte Carlo methods until I had to explain variance reduction to students. Teaching forced me to deeply understand **why** antithetic variates work, not just **that** they work.
+
+### 3. Patience and Empathy Matter
+
+What's obvious to you isn't obvious to beginners. Remember your own journey:
+- You once struggled with this too
+- Different learning speeds are normal
+- Confusion is part of learning
+
+## Advice for Aspiring Teachers
+
+### 1. Prepare Examples, Not Just Slides
+```matlab
+% Have working code examples ready
+% Test them beforehand
+% Prepare variations for different scenarios
+```
+
+### 2. Encourage Questions
+- "No stupid questions" (mean it)
+- Repeat questions for whole class
+- Validate confusion ("That's a great question")
+
+### 3. Give Feedback That Helps
+**Not helpful**: "This is wrong"
+**Helpful**: "Your logic is correct, but check line 15—what happens when x=0?"
+
+### 4. Build a Library of Explanations
+Keep track of:
+- Analogies that work
+- Examples that click
+- Common misconceptions
+- Different explanation styles
+
+## Impact on My Engineering
+
+Teaching improved my:
+
+**1. Code Review Skills**
+- Explaining why code could be better
+- Finding root causes, not symptoms
+- Patience with junior developers
+
+**2. Documentation**
+- Writing for future maintainers
+- Explaining complex systems
+- Providing runnable examples
+
+**3. Technical Communication**
+- Presenting to non-technical stakeholders
+- Writing design docs
+- Explaining technical decisions
+
+## Conclusion
+
+Teaching 150+ students wasn't just about helping them learn MATLAB and statistics—it made me a better engineer, communicator, and problem-solver.
+
+**Key takeaways**:
+- Communication is a technical skill worth developing
+- Understanding deepens through teaching
+- Different people need different explanations
+- Examples > theory (for motivation)
+- Debugging is a skill that needs explicit teaching
+
+Whether you're teaching students, mentoring junior engineers, or writing documentation, these lessons apply.
+
+## Related Work
+
+The teaching experience informed my approach to:
+- Building user-friendly systems (RAG platform)
+- Creating clear dashboards ([barrier options tool](https://barrier-options.streamlit.app))
+- Writing technical documentation
+- Mentoring team members
+
+Good engineering is as much about communication as it is about code.

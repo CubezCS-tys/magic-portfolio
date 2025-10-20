@@ -1,0 +1,276 @@
+---
+title: "From Academia to Industry: Building Production AI Systems"
+publishedAt: "2025-08-01"
+summary: "Lessons learned transitioning from academic research to building large-scale AI systems in production, and what I wish I knew earlier."
+image: "/images/projects/project-01/cover-02.jpg"
+---
+
+## Introduction
+
+Transitioning from academic mathematics and computer science to production AI engineering requires a shift in mindset. Here's what I learned building a RAG platform serving millions of documents while pursuing my MSc in Financial Mathematics.
+
+## The Reality Gap
+
+### What Academia Teaches
+- Perfect models with clean data
+- Optimizing for the last 0.1% accuracy
+- Publishing novel methods
+- Working with benchmark datasets
+
+### What Industry Needs
+- Systems that work with messy, real-world data
+- Fast-enough solutions that ship on time
+- Reliable, maintainable code
+- Handling edge cases gracefully
+
+## Key Lessons
+
+### 1. Engineering Matters More Than Models
+
+**Academic mindset**: "Let's implement the latest transformer architecture from ICML."
+
+**Industry reality**: "The biggest gains came from caching, batching, and better data pipelines."
+
+Our RAG platform achieved:
+- 2.3× speedup from query batching (not better models)
+- 90% latency reduction from caching strategies
+- Reliability from redundancy and error handling
+
+**Lesson**: Optimize the system, not just the model.
+
+### 2. Monitoring is Not Optional
+
+In academia, you run experiments and check results. In production:
+
+```python
+# Every query needs instrumentation
+@monitor_performance
+def retrieve_documents(query: str) -> List[Document]:
+    start_time = time.time()
+    
+    try:
+        results = vector_db.search(query)
+        
+        metrics.log({
+            'latency': time.time() - start_time,
+            'num_results': len(results),
+            'query_length': len(query),
+            'timestamp': datetime.now()
+        })
+        
+        return results
+    except Exception as e:
+        error_tracker.log(e)
+        return fallback_search(query)
+```
+
+**Why it matters**:
+- Catch issues before users complain
+- Understand real-world usage patterns
+- Make data-driven optimization decisions
+
+### 3. Data Quality > Data Quantity
+
+Working with millions of Arabic documents taught me:
+
+**Bad approach**: 
+- Ingest everything
+- Let the model figure it out
+- More data = better results
+
+**Better approach**:
+- Clean and validate inputs
+- Handle encoding issues (Arabic has many!)
+- Detect and flag low-quality documents
+- Monitor data drift
+
+Example issue we hit:
+```python
+# Arabic text can break if encoding isn't handled properly
+text = raw_input.decode('utf-8')  # Not enough!
+
+# Need to:
+# 1. Detect encoding
+# 2. Normalize diacritics
+# 3. Handle RTL text direction
+# 4. Remove control characters
+# 5. Validate Unicode normalization
+```
+
+### 4. Scalability Isn't Premature Optimization
+
+"Premature optimization is the root of all evil" is true for algorithms, but system design is different.
+
+**Questions to ask early**:
+- What happens when traffic 10xs?
+- Can we handle database failures?
+- How do we deploy updates without downtime?
+- What's our disaster recovery plan?
+
+**Design patterns that helped**:
+- Stateless services for horizontal scaling
+- Message queues for async processing
+- Database read replicas
+- Circuit breakers for external dependencies
+
+### 5. Code is Communication
+
+Academic code:
+```python
+# Quick script for experiment
+def f(x,y,z):
+    return np.dot(x,y) + z
+```
+
+Production code:
+```python
+def compute_risk_adjusted_return(
+    returns: np.ndarray,
+    risk_free_rate: float,
+    volatility: np.ndarray
+) -> float:
+    """
+    Calculate the Sharpe ratio for given returns.
+    
+    Args:
+        returns: Array of period returns
+        risk_free_rate: Risk-free rate for the period
+        volatility: Standard deviation of returns
+    
+    Returns:
+        Sharpe ratio (risk-adjusted return)
+        
+    Raises:
+        ValueError: If volatility is zero or negative
+    """
+    if volatility <= 0:
+        raise ValueError("Volatility must be positive")
+        
+    excess_returns = returns - risk_free_rate
+    return np.mean(excess_returns) / volatility
+```
+
+**Why it matters**:
+- Your future self will thank you
+- Others need to maintain your code
+- Documentation enables collaboration
+
+## Bridging Both Worlds
+
+### What to Keep from Academia
+
+**1. Mathematical Rigor**
+- Understand your models deeply
+- Know the assumptions and limitations
+- Validate results mathematically
+
+**2. Experimental Thinking**
+- A/B test changes
+- Measure everything
+- Challenge assumptions with data
+
+**3. Continuous Learning**
+- Keep up with research
+- Read papers
+- Experiment with new techniques
+
+### What to Adopt from Industry
+
+**1. Pragmatism**
+- Ship working solutions
+- Iterate based on feedback
+- Good enough today > perfect never
+
+**2. Systems Thinking**
+- Consider the full stack
+- Think about operations
+- Plan for failure
+
+**3. Collaboration**
+- Code reviews
+- Documentation
+- Knowledge sharing
+
+## Practical Advice
+
+### For Students Entering Industry
+
+**1. Build Real Projects**
+Don't just do Kaggle. Build something that:
+- Runs continuously
+- Serves real users
+- Handles errors gracefully
+- Requires maintenance
+
+**2. Learn Production Tools**
+- Git (properly, not just `git add .` and `git commit`)
+- Docker and containerization
+- CI/CD pipelines
+- Cloud platforms (AWS/GCP/Azure)
+
+**3. Understand the Business**
+- Why are we building this?
+- What's the success metric?
+- What's the ROI?
+- Who are the users?
+
+### For Academics Building Systems
+
+**1. Start Simple**
+- MVP first, optimize later
+- Use proven technologies
+- Don't reinvent the wheel
+
+**2. Embrace Infrastructure**
+```bash
+# These are as important as your model
+docker-compose up  # Local development
+pytest tests/      # Automated testing  
+terraform apply    # Infrastructure as code
+kubectl deploy     # Container orchestration
+```
+
+**3. Get Feedback Early**
+- Ship to small group first
+- Iterate based on real usage
+- Don't wait for perfection
+
+## My Journey
+
+### Academic Projects
+- Clean implementations
+- Focus on correctness
+- Benchmark performance
+- Novel approaches
+
+### RAG Platform (Industry)
+- Messy real-world data
+- Focus on reliability
+- Actual user latency
+- Proven methods that scale
+
+**Both are valuable.** The key is knowing when to apply which mindset.
+
+## Conclusion
+
+Building production AI systems while studying Financial Mathematics gave me unique perspective:
+
+**Theory** provides the foundation:
+- Understanding why methods work
+- Knowing limitations
+- Designing better systems
+
+**Practice** delivers value:
+- Systems that work reliably
+- Code that's maintainable
+- Solutions that scale
+
+The best engineers bridge both worlds—grounded in theory but pragmatic in implementation.
+
+## Resources
+
+- [My barrier options project](https://barrier-options.streamlit.app) - Academic rigor meets production quality
+- Teaching experience at Brunel - Bridging theory and practice for 150+ students
+- RAG platform - Production AI at scale
+
+The transition isn't about abandoning academic rigor—it's about applying it in the real world where reliability, scalability, and maintainability matter just as much as accuracy.

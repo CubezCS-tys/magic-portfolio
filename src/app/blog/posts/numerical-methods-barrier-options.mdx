@@ -1,0 +1,153 @@
+---
+title: "Numerical Methods for Barrier Option Pricing: A Comparative Study"
+publishedAt: "2024-03-20"
+summary: "Deep dive into implementing and comparing analytical, Monte Carlo, and finite difference methods for pricing barrier options, with focus on accuracy and computational efficiency."
+image: "/images/projects/project-01/cover-04.jpg"
+---
+
+## Introduction
+
+Barrier options are exotic derivatives whose payoff depends on whether the underlying asset reaches a certain price level during the option's lifetime. Pricing these instruments accurately and efficiently is crucial for risk management and trading strategies.
+
+This post explores the mathematical foundations and practical implementations of various numerical methods I used in my computational finance research.
+
+## The Mathematical Framework
+
+### Black-Scholes Framework
+
+Starting with the fundamental Black-Scholes PDE for barrier options:
+
+$$
+\frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + rS\frac{\partial V}{\partial S} - rV = 0
+$$
+
+With boundary conditions enforcing the barrier:
+
+$$
+V(B, t) = 0 \text{ for knock-out options at barrier } B
+$$
+
+## Methods Compared
+
+### 1. Analytical Solutions
+
+Applied Itô's Lemma and stochastic calculus for closed-form solutions where available:
+
+- Fast computation
+- Exact under model assumptions
+- Limited to simple barrier structures
+
+### 2. Monte Carlo Simulation
+
+Implemented variance reduction techniques:
+
+**Antithetic Variates**: Generate pairs $(Z, -Z)$ to reduce variance:
+
+$$
+\hat{V} = \frac{1}{2}(V(Z) + V(-Z))
+$$
+
+**Control Variates**: Use correlated asset with known price:
+
+$$
+\hat{V} = V + \beta(V_{control} - E[V_{control}])
+$$
+
+**Result**: Achieved equivalent accuracy with **40% fewer paths**.
+
+### 3. Finite Difference Methods
+
+#### Adaptive Binomial Mesh
+
+Implemented dynamic grid refinement near barriers:
+
+- Fine grid near barrier for accuracy
+- Coarse grid away from barrier for efficiency
+- **83% higher accuracy** near barrier regions
+
+#### Explicit vs Implicit Schemes
+
+**Explicit (Forward Euler)**:
+- Simple implementation
+- Conditionally stable: $\Delta t \leq \frac{(\Delta S)^2}{2\sigma^2 S^2}$
+
+**Implicit (Backward Euler)**:
+- Unconditionally stable
+- Requires matrix inversion
+- Better for long-maturity options
+
+**Crank-Nicolson**:
+- Second-order accuracy in time
+- Best balance of accuracy and stability
+
+## Implementation Insights
+
+### Convergence Analysis
+
+Tested convergence rates for different methods:
+
+```
+Grid points | MC Error | FD Error | Time (ms)
+-------------------------------------------------
+100         | 0.15     | 0.08     | 5
+1000        | 0.05     | 0.01     | 45
+10000       | 0.015    | 0.001    | 420
+```
+
+### Computational Efficiency
+
+Key findings:
+- FD methods excel for single-option pricing
+- MC scales better for portfolios
+- Variance reduction crucial for MC performance
+
+## Practical Considerations
+
+### Barrier Monitoring
+
+**Discrete vs Continuous**:
+- Continuous barriers: Theoretical construct
+- Discrete barriers: Market reality
+- Price differences can be significant
+
+### Volatility Regimes
+
+Performance varies under different volatility:
+- High volatility: MC more robust
+- Low volatility: FD methods more efficient
+- Adaptive methods best overall
+
+## Interactive Dashboard
+
+Built a [Streamlit dashboard](https://barrier-options.streamlit.app) to:
+- Compare methods in real-time
+- Visualize convergence patterns
+- Tune parameters interactively
+- Analyze stability regions
+
+## Key Takeaways
+
+1. **No universal best method**: Choice depends on option structure, market conditions, and computational resources
+2. **Variance reduction is powerful**: Simple techniques can halve computational cost
+3. **Adaptive methods matter**: Refinement near critical regions dramatically improves accuracy
+4. **Stability analysis is essential**: Especially for finite difference schemes
+
+## Future Work
+
+Exploring:
+- Stochastic volatility models (Heston, SABR)
+- Jump-diffusion processes
+- Multi-asset barrier options
+- GPU acceleration for Monte Carlo
+
+## Technical Implementation
+
+- **Languages**: Python, MATLAB, R
+- **Libraries**: NumPy, SciPy, QuantLib
+- **Visualization**: Matplotlib, Plotly, Streamlit
+
+The complete implementation and interactive tools are available through my [barrier options dashboard](https://barrier-options.streamlit.app).
+
+---
+
+Numerical methods in finance bridge theory and practice. Understanding their strengths and limitations is key to building robust pricing systems.

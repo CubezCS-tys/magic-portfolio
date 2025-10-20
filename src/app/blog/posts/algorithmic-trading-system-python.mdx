@@ -1,0 +1,510 @@
+---
+title: "Building an Algorithmic Trading System: From Backtest to Production"
+publishedAt: "2024-05-12"
+summary: "Designing and implementing a Python-based algorithmic trading engine with focus on risk management, backtesting, and Islamic finance principles."
+image: "/images/projects/project-01/cover-02.jpg"
+---
+
+## Introduction
+
+Building a trading system that goes beyond toy examples requires careful consideration of architecture, risk management, and real-world constraints. This post covers lessons learned developing an event-driven trading engine with a focus on quantitative strategies and robust risk controls.
+
+## System Architecture
+
+### Event-Driven Design
+
+**Why event-driven?**
+- Mirrors real market mechanics
+- Easy to backtest (replay events)
+- Cleanly separates strategy from execution
+- Handles multiple data sources
+
+**Core components**:
+```python
+class Event:
+    """Base class for all events"""
+    pass
+
+class MarketEvent(Event):
+    """New market data available"""
+    def __init__(self, symbol, timestamp, data):
+        self.symbol = symbol
+        self.timestamp = timestamp
+        self.data = data
+
+class SignalEvent(Event):
+    """Strategy generated a signal"""
+    def __init__(self, symbol, signal_type, strength):
+        self.symbol = symbol
+        self.signal_type = signal_type  # 'LONG', 'SHORT', 'EXIT'
+        self.strength = strength
+
+class OrderEvent(Event):
+    """Order to be executed"""
+    def __init__(self, symbol, order_type, quantity, direction):
+        self.symbol = symbol
+        self.order_type = order_type  # 'MARKET', 'LIMIT'
+        self.quantity = quantity
+        self.direction = direction  # 'BUY', 'SELL'
+
+class FillEvent(Event):
+    """Order executed"""
+    def __init__(self, timestamp, symbol, quantity, price, commission):
+        self.timestamp = timestamp
+        self.symbol = symbol
+        self.quantity = quantity
+        self.price = price
+        self.commission = commission
+```
+
+### Event Queue
+```python
+import queue
+from typing import List
+
+class EventQueue:
+    def __init__(self):
+        self.queue = queue.Queue()
+    
+    def put(self, event: Event):
+        self.queue.put(event)
+    
+    def get(self) -> Event:
+        return self.queue.get(block=False)
+    
+    def empty(self) -> bool:
+        return self.queue.empty()
+```
+
+## Trading Strategies
+
+### 1. Mean Reversion Pairs Trading
+
+**Concept**: Find cointegrated pairs and trade deviations from equilibrium.
+
+```python
+class PairsTradingStrategy:
+    def __init__(self, pair, lookback=60, entry_threshold=2.0, exit_threshold=0.5):
+        self.pair = pair  # (symbol1, symbol2)
+        self.lookback = lookback
+        self.entry_threshold = entry_threshold
+        self.exit_threshold = exit_threshold
+        self.hedge_ratio = None
+        
+    def calculate_spread(self, prices1, prices2):
+        """Calculate cointegrated spread"""
+        # Estimate hedge ratio via OLS
+        self.hedge_ratio = np.polyfit(prices1, prices2, 1)[0]
+        spread = prices2 - self.hedge_ratio * prices1
+        return spread
+    
+    def generate_signals(self, market_data):
+        """Generate trading signals based on z-score"""
+        prices1 = market_data[self.pair[0]][-self.lookback:]
+        prices2 = market_data[self.pair[1]][-self.lookback:]
+        
+        spread = self.calculate_spread(prices1, prices2)
+        z_score = (spread[-1] - np.mean(spread)) / np.std(spread)
+        
+        if z_score > self.entry_threshold:
+            # Spread too high - short spread
+            return [
+                SignalEvent(self.pair[0], 'LONG', 1.0),
+                SignalEvent(self.pair[1], 'SHORT', self.hedge_ratio)
+            ]
+        elif z_score < -self.entry_threshold:
+            # Spread too low - long spread
+            return [
+                SignalEvent(self.pair[0], 'SHORT', 1.0),
+                SignalEvent(self.pair[1], 'LONG', self.hedge_ratio)
+            ]
+        elif abs(z_score) < self.exit_threshold:
+            # Exit positions
+            return [
+                SignalEvent(self.pair[0], 'EXIT', 1.0),
+                SignalEvent(self.pair[1], 'EXIT', 1.0)
+            ]
+        
+        return []
+```
+
+### 2. Moving Average Crossover
+
+**Concept**: Trade momentum using fast/slow MA crosses.
+
+```python
+class MovingAverageCrossover:
+    def __init__(self, symbol, fast_period=20, slow_period=50):
+        self.symbol = symbol
+        self.fast_period = fast_period
+        self.slow_period = slow_period
+        self.position = 0  # Track current position
+        
+    def calculate_signals(self, prices):
+        """Generate signals from MA crossover"""
+        if len(prices) < self.slow_period:
+            return None
+            
+        fast_ma = np.mean(prices[-self.fast_period:])
+        slow_ma = np.mean(prices[-self.slow_period:])
+        
+        # Previous values for crossover detection
+        prev_fast = np.mean(prices[-self.fast_period-1:-1])
+        prev_slow = np.mean(prices[-self.slow_period-1:-1])
+        
+        # Bullish crossover
+        if prev_fast <= prev_slow and fast_ma > slow_ma:
+            if self.position <= 0:
+                return SignalEvent(self.symbol, 'LONG', 1.0)
+                
+        # Bearish crossover
+        elif prev_fast >= prev_slow and fast_ma < slow_ma:
+            if self.position >= 0:
+                return SignalEvent(self.symbol, 'SHORT', 1.0)
+        
+        return None
+```
+
+### 3. ML-Based Forecasting
+
+**Concept**: Use machine learning for price prediction.
+
+```python
+from sklearn.ensemble import RandomForestRegressor
+import pandas as pd
+
+class MLStrategy:
+    def __init__(self, symbol, lookback=30):
+        self.symbol = symbol
+        self.lookback = lookback
+        self.model = RandomForestRegressor(n_estimators=100)
+        self.trained = False
+        
+    def create_features(self, prices):
+        """Engineer features from price data"""
+        df = pd.DataFrame({'price': prices})
+        
+        # Technical indicators as features
+        df['returns'] = df['price'].pct_change()
+        df['sma_5'] = df['price'].rolling(5).mean()
+        df['sma_20'] = df['price'].rolling(20).mean()
+        df['volatility'] = df['returns'].rolling(10).std()
+        df['momentum'] = df['price'] - df['price'].shift(5)
+        
+        # RSI
+        delta = df['price'].diff()
+        gain = delta.where(delta > 0, 0).rolling(14).mean()
+        loss = -delta.where(delta < 0, 0).rolling(14).mean()
+        rs = gain / loss
+        df['rsi'] = 100 - (100 / (1 + rs))
+        
+        return df.dropna()
+    
+    def train(self, historical_prices):
+        """Train the model on historical data"""
+        df = self.create_features(historical_prices)
+        
+        # Target: next day return
+        df['target'] = df['price'].shift(-1) / df['price'] - 1
+        df = df.dropna()
+        
+        X = df[['returns', 'sma_5', 'sma_20', 'volatility', 'momentum', 'rsi']]
+        y = df['target']
+        
+        self.model.fit(X, y)
+        self.trained = True
+    
+    def predict_signal(self, current_prices):
+        """Generate signal from ML prediction"""
+        if not self.trained:
+            return None
+            
+        df = self.create_features(current_prices)
+        features = df[['returns', 'sma_5', 'sma_20', 'volatility', 'momentum', 'rsi']].iloc[-1:]
+        
+        predicted_return = self.model.predict(features)[0]
+        
+        # Simple threshold-based signal
+        if predicted_return > 0.01:  # Expect >1% return
+            return SignalEvent(self.symbol, 'LONG', abs(predicted_return))
+        elif predicted_return < -0.01:
+            return SignalEvent(self.symbol, 'SHORT', abs(predicted_return))
+        
+        return None
+```
+
+## Risk Management
+
+### Position Sizing
+
+**Kelly Criterion** (adjusted for practical use):
+
+```python
+class PositionSizer:
+    def __init__(self, max_position_size=0.1, kelly_fraction=0.25):
+        self.max_position_size = max_position_size
+        self.kelly_fraction = kelly_fraction
+        
+    def calculate_size(self, signal_strength, win_rate, avg_win, avg_loss, capital):
+        """
+        Calculate position size using fractional Kelly
+        
+        Kelly fraction = (p*b - q) / b
+        where p = win rate, q = loss rate, b = avg_win/avg_loss
+        """
+        if avg_loss == 0:
+            return self.max_position_size * capital
+            
+        q = 1 - win_rate
+        b = avg_win / abs(avg_loss)
+        kelly = (win_rate * b - q) / b
+        
+        # Use fraction of Kelly for safety
+        adjusted_kelly = kelly * self.kelly_fraction
+        
+        # Cap at max position size
+        position_fraction = min(adjusted_kelly, self.max_position_size)
+        
+        # Adjust by signal strength
+        final_size = position_fraction * signal_strength * capital
+        
+        return max(0, final_size)  # Never negative
+```
+
+### Risk Limits
+
+```python
+class RiskManager:
+    def __init__(self, max_drawdown=0.15, max_position_size=0.1, 
+                 max_correlation=0.7, max_sector_exposure=0.3):
+        self.max_drawdown = max_drawdown
+        self.max_position_size = max_position_size
+        self.max_correlation = max_correlation
+        self.max_sector_exposure = max_sector_exposure
+        self.peak_capital = 0
+        
+    def check_drawdown(self, current_capital):
+        """Check if drawdown limit breached"""
+        self.peak_capital = max(self.peak_capital, current_capital)
+        drawdown = (self.peak_capital - current_capital) / self.peak_capital
+        return drawdown < self.max_drawdown
+    
+    def check_position_size(self, position_value, total_capital):
+        """Verify position size within limits"""
+        return (position_value / total_capital) <= self.max_position_size
+    
+    def check_correlation(self, new_position, portfolio, correlation_matrix):
+        """Ensure portfolio diversification"""
+        if not portfolio:
+            return True
+            
+        avg_correlation = np.mean([
+            correlation_matrix[new_position][existing]
+            for existing in portfolio
+        ])
+        return avg_correlation < self.max_correlation
+```
+
+## Islamic Finance Compliance
+
+### Shariah-Compliant Trading
+
+Key principles implemented:
+1. **No Riba (interest)**: Avoid interest-based instruments
+2. **No Gharar (uncertainty)**: Transparent contracts
+3. **No Maisir (gambling)**: Speculation vs investment distinction
+4. **Halal assets only**: Screen for prohibited industries
+
+```python
+class ShariaFilter:
+    # Prohibited sectors
+    PROHIBITED_SECTORS = {
+        'alcohol', 'gambling', 'pork', 'conventional_finance',
+        'tobacco', 'weapons', 'adult_entertainment'
+    }
+    
+    def __init__(self):
+        self.approved_symbols = set()
+        
+    def is_compliant(self, symbol, company_data):
+        """
+        Check if stock meets Shariah criteria
+        """
+        # 1. Business activity screen
+        if company_data['sector'] in self.PROHIBITED_SECTORS:
+            return False
+            
+        # 2. Financial ratios (common screens)
+        # Debt to market cap < 33%
+        if company_data['total_debt'] / company_data['market_cap'] > 0.33:
+            return False
+            
+        # Interest-bearing securities < 33% of assets
+        if company_data['cash_securities'] / company_data['total_assets'] > 0.33:
+            return False
+            
+        # Interest income < 5% of revenue
+        if company_data['interest_income'] / company_data['revenue'] > 0.05:
+            return False
+            
+        return True
+    
+    def filter_universe(self, universe, company_database):
+        """Filter tradeable universe for compliance"""
+        compliant = []
+        for symbol in universe:
+            if self.is_compliant(symbol, company_database[symbol]):
+                compliant.append(symbol)
+        return compliant
+```
+
+## Backtesting Framework
+
+### Avoiding Bias
+
+```python
+class Backtester:
+    def __init__(self, strategy, initial_capital=100000):
+        self.strategy = strategy
+        self.initial_capital = initial_capital
+        self.capital = initial_capital
+        self.positions = {}
+        self.trades = []
+        
+    def run(self, historical_data):
+        """
+        Run backtest avoiding lookahead bias
+        """
+        for timestamp in sorted(historical_data.keys()):
+            # Only use data up to current timestamp
+            available_data = {
+                t: data for t, data in historical_data.items()
+                if t <= timestamp
+            }
+            
+            # Generate signals
+            signals = self.strategy.generate_signals(available_data)
+            
+            # Execute trades
+            for signal in signals:
+                self.execute_signal(signal, timestamp, 
+                                   historical_data[timestamp])
+        
+        return self.calculate_performance()
+    
+    def calculate_performance(self):
+        """Calculate performance metrics"""
+        returns = pd.Series([t['return'] for t in self.trades])
+        
+        metrics = {
+            'total_return': (self.capital / self.initial_capital - 1),
+            'sharpe_ratio': self.calculate_sharpe(returns),
+            'max_drawdown': self.calculate_max_drawdown(),
+            'win_rate': len(returns[returns > 0]) / len(returns),
+            'num_trades': len(self.trades),
+            'avg_trade': returns.mean(),
+        }
+        
+        return metrics
+    
+    def calculate_sharpe(self, returns, risk_free_rate=0.02):
+        """Sharpe ratio calculation"""
+        excess_returns = returns - risk_free_rate/252
+        return np.sqrt(252) * excess_returns.mean() / excess_returns.std()
+```
+
+## Performance Analysis
+
+### Metrics That Matter
+
+```python
+def analyze_strategy_performance(trades_df):
+    """
+    Comprehensive performance analysis
+    """
+    # Basic metrics
+    total_trades = len(trades_df)
+    winners = len(trades_df[trades_df['pnl'] > 0])
+    win_rate = winners / total_trades
+    
+    # Risk-adjusted returns
+    returns = trades_df['return']
+    sharpe = returns.mean() / returns.std() * np.sqrt(252)
+    sortino = returns.mean() / returns[returns < 0].std() * np.sqrt(252)
+    
+    # Drawdown analysis
+    cumulative = (1 + returns).cumprod()
+    running_max = cumulative.expanding().max()
+    drawdown = (cumulative - running_max) / running_max
+    max_dd = drawdown.min()
+    
+    # Trade analysis
+    avg_win = trades_df[trades_df['pnl'] > 0]['pnl'].mean()
+    avg_loss = abs(trades_df[trades_df['pnl'] < 0]['pnl'].mean())
+    profit_factor = avg_win * winners / (avg_loss * (total_trades - winners))
+    
+    return {
+        'win_rate': win_rate,
+        'sharpe_ratio': sharpe,
+        'sortino_ratio': sortino,
+        'max_drawdown': max_dd,
+        'profit_factor': profit_factor,
+        'avg_win': avg_win,
+        'avg_loss': avg_loss
+    }
+```
+
+## Key Lessons
+
+### 1. Simplicity Often Wins
+Complex strategies aren't always better. Mean reversion on carefully selected pairs often outperformed ML models.
+
+### 2. Risk Management is Everything
+Best strategy means nothing without proper risk controls. Our system:
+- Position size limits
+- Drawdown monitoring
+- Correlation checks
+- Sector exposure limits
+
+### 3. Transaction Costs Matter
+```python
+# Don't forget:
+- Commission per trade
+- Bid-ask spread
+- Slippage
+- Market impact (for larger sizes)
+```
+
+### 4. Backtesting Pitfalls
+- Lookahead bias
+- Survivorship bias
+- Overfitting to historical data
+- Ignoring transaction costs
+
+## Future Enhancements
+
+**On the roadmap**:
+- Real-time execution via broker API
+- Advanced ML models (LSTM, transformers)
+- Multi-asset portfolio optimization
+- Options strategies
+- High-frequency capabilities
+
+## Conclusion
+
+Building a trading system teaches lessons applicable beyond finance:
+- Event-driven architecture
+- Risk management frameworks
+- Performance optimization
+- Ethical considerations (Shariah compliance)
+- Avoiding bias in data-driven systems
+
+The intersection of mathematics, programming, and finance creates unique challenges—and opportunities.
+
+## Resources
+
+- Similar attention to detail in my [barrier options project](https://barrier-options.streamlit.app)
+- Academic background in stochastic processes and numerical methods
+- Production experience building scalable systems
+
+Algorithmic trading is about systematic decision-making backed by rigorous testing and robust risk management.
