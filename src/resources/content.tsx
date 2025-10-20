@@ -5,7 +5,7 @@ const person: Person = {
   firstName: "Tahar Yassine",
   lastName: "Soltani",
   name: `Tahar Yassine Soltani`,
-  role: "Full-Stack AI Engineer & Quantitative Developer",
+  role: "Full-Stack AI Engineer & Aspiring Quant",
   avatar: "/images/avatar.jpg",
   email: "ysolta1969@gmail.com",
   location: "Europe/London", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
@@ -29,7 +29,7 @@ const social: Social = [
   {
     name: "LinkedIn",
     icon: "linkedin",
-    link: "https://linkedin.com/in/tahar-yassine-soltani",
+    link: "https://www.linkedin.com/in/yassine-soltani-1615b620b/",
   },
   {
     name: "Portfolio",
