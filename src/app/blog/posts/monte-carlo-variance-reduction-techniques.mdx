@@ -96,7 +96,7 @@ $$
 ### Benchmark: European Call Option
 
 Setup:
-- $S_0 = 100$, $K = 100$, $r = 0.05$, $\sigma = 0.2$, $T = 1$
+- S₀ = 100, K = 100, r = 0.05, σ = 0.2, T = 1
 
 | Method | Paths Needed | Time (ms) | Variance Ratio |
 |--------|--------------|-----------|----------------|
@@ -156,7 +156,7 @@ for K in strikes:
 
 Replace pseudo-random numbers with low-discrepancy sequences (Sobol, Halton):
 
-**Convergence rate**: $O((\log N)^d / N)$ vs $O(1/\sqrt{N})$
+**Convergence rate**: O((log N)^d / N) vs O(1/√N)
 
 **Trade-off**: Works best in low dimensions; effectiveness decreases with dimension.
 
