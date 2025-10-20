@@ -8,6 +8,7 @@ View the demo [here](https://demo.magic-portfolio.com).
 
 ## Getting started
 
+
 **1. Clone the repository**
 ```
 git clone https://github.com/once-ui-system/magic-portfolio.git
