@@ -37,6 +37,11 @@ const social: Social = [
     link: "https://barrier-options.streamlit.app",
   },
   {
+    name: "CV",
+    icon: "document",
+    link: "/cv.pdf",
+  },
+  {
     name: "Email",
     icon: "email",
     link: `mailto:${person.email}`,
