@@ -162,31 +162,84 @@
 }
 
 .boot-mark {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  /* Flex items don't inherit the inter-letter gap, so the dot needs its own. */
+  gap: 0.06em;
   font-family: var(--cond);
   font-size: var(--fs-display);
   font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-hi);
-  text-align: center;
-  /* Tracking in from wide-and-blurred is the whole "powering up" gesture. */
-  animation: boot-track 1.05s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.boot-mark em {
+/* The dot is the origin. It lands first with a flare, then throws the two
+   halves of the wordmark outward from itself. */
+.bm-dot {
   font-style: normal;
   color: var(--amber);
+  animation: bm-dot 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) both;
 }
 
-@keyframes boot-track {
+@keyframes bm-dot {
   from {
     opacity: 0;
-    letter-spacing: 0.6em;
-    filter: blur(7px);
+    transform: scale(0.15);
+    text-shadow: none;
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.4);
+    text-shadow: 0 0 18px var(--amber);
   }
   to {
     opacity: 1;
-    letter-spacing: 0.18em;
-    filter: blur(0);
+    transform: scale(1);
+    text-shadow: none;
+  }
+}
+
+/* Each half is wiped outward from its inner edge — the edge touching the dot
+   — so it reads as extruded from that point. Translating the whole word
+   instead made the two halves collide over the dot mid-flight. */
+.bm-word {
+  display: inline-block;
+  animation-duration: 0.9s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-delay: 0.26s;
+  animation-fill-mode: both;
+}
+
+.bm-a {
+  animation-name: bm-left;
+}
+
+.bm-b {
+  animation-name: bm-right;
+}
+
+@keyframes bm-left {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes bm-right {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
   }
 }
 
