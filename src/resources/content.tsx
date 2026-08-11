@@ -24,7 +24,7 @@ const social: Social = [
   {
     name: "GitHub",
     icon: "github",
-    link: "https://github.com/CubezCS-sys",
+    link: "https://github.com/CubezCS-tys",
   },
   {
     name: "LinkedIn",
@@ -50,10 +50,10 @@ const social: Social = [
 
 const home: Home = {
   path: "/",
-  image: "/images/og/home.jpg",
-  label: "Home",
-  title: `${person.name}'s Portfolio`,
-  description: `Portfolio website showcasing my work as a ${person.role}`,
+  image: "/images/og/terminal.png",
+  label: "Terminal",
+  title: `${person.name} — Quant Terminal`,
+  description: `An interactive trading terminal standing in for a CV: derivative pricers, a systematic trading engine and AI retrieval infrastructure, by ${person.name}.`,
   headline: <>Building intelligent systems for quantitative finance</>,
   featured: {
     display: true,
@@ -120,10 +120,10 @@ const about: About = {
             Built scalable pipelines converting unstructured data to JSON datasets; optimised chunking, embedding, and vectorisation for retrieval efficiency.
           </>,
           <>
-            Deployed distributed databases (FAISS, Milvus) and engineered low-latency similarity-search infrastructure with caching and query optimisation.
+            Deployed distributed vector databases (FAISS, Qdrant) and engineered low-latency similarity-search infrastructure with caching and query optimisation.
           </>,
           <>
-            Achieved 2.3× retrieval speedup and 90% latency reduction through query batching and parallelisation.
+            Achieved 2.3× retrieval speedup and ~30% latency reduction through query batching and parallelisation.
           </>,
           <>
             Created fail-safe analytics dashboards for monitoring latency, throughput and query statistics, enabling data-driven system optimisation.
@@ -212,7 +212,7 @@ const about: About = {
       {
         title: "Data Infrastructure",
         description: (
-          <>Built distributed systems with Streamlit, Flask, Plotly, Matplotlib, FAISS, and Milvus for real-time analytics and vector search.</>
+          <>Built distributed systems with Streamlit, Flask, FastAPI, Matplotlib, FAISS, and Qdrant for real-time analytics and vector search.</>
         ),
         tags: [
           {

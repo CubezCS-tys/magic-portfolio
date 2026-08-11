@@ -21,7 +21,7 @@ const routes: RoutesConfig = {
   "/about": true,
   "/work": true,
   "/blog": true,
-  "/gallery": true,
+  "/gallery": false,
 };
 
 const display: DisplayConfig = {
@@ -32,13 +32,44 @@ const display: DisplayConfig = {
 
 // Enable password protection on selected routes
 // Set password in the .env file, refer to .env.example
-const protectedRoutes: ProtectedRoutesConfig = {
-  "/work/automate-design-handovers-with-a-figma-to-code-pipeline": true,
-};
+const protectedRoutes: ProtectedRoutesConfig = {};
 
 // Import and set font for each variant
 import { Geist } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Sans_Condensed } from "next/font/google";
+
+// Long-form reading face. The terminal itself is all mono, but 12px mono over
+// several hundred words is punishing, so articles get the sans of the same
+// superfamily — same voice, different job.
+const terminalSans = IBM_Plex_Sans({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+// The terminal runs on the IBM Plex superfamily: condensed sans for signage,
+// mono for every number on the screen.
+const terminalMono = IBM_Plex_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const terminalCondensed = IBM_Plex_Sans_Condensed({
+  variable: "--font-cond",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
+
+const terminalFonts = {
+  mono: terminalMono,
+  condensed: terminalCondensed,
+  sans: terminalSans,
+};
 
 const heading = Geist({
   variable: "--font-heading",
@@ -223,6 +254,7 @@ export {
   protectedRoutes,
   baseURL,
   fonts,
+  terminalFonts,
   style,
   schema,
   sameAs,

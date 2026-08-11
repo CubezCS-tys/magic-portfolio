@@ -17,6 +17,7 @@ export {
   protectedRoutes,
   baseURL,
   fonts,
+  terminalFonts,
   style,
   schema,
   sameAs,
