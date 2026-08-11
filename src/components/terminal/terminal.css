@@ -5,7 +5,8 @@
    Everything is scoped under .trm so the Once UI pages are untouched.
    ========================================================================== */
 
-.trm {
+.trm,
+.boot {
   --void: #050609;
   --panel: #0d1015;
   --panel-hi: #191f29;
@@ -45,7 +46,9 @@
   --s-4: 16px;
   --s-5: 24px;
   --s-6: 32px;
+}
 
+.trm {
   position: relative;
   z-index: 1;
   min-height: 100vh;
@@ -114,6 +117,236 @@
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+/* ==========================================================================
+   Boot sequence
+   Pure CSS so it completes without JS. Total run ~2.1s, then it removes
+   itself from the hit-testing tree entirely.
+   ========================================================================== */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--s-5);
+  background: var(--void);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  animation: boot-out 0.55s cubic-bezier(0.4, 0, 0.2, 1) 1.9s forwards;
+}
+
+/* Replayed only once per session; the head script sets this flag. */
+:root[data-booted] .boot,
+.boot[data-skip] {
+  animation: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes boot-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(1.015);
+  }
+}
+
+.boot-inner {
+  width: min(520px, 100%);
+}
+
+.boot-mark {
+  font-family: var(--cond);
+  font-size: var(--fs-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-hi);
+  text-align: center;
+  /* Tracking in from wide-and-blurred is the whole "powering up" gesture. */
+  animation: boot-track 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.boot-mark em {
+  font-style: normal;
+  color: var(--amber);
+}
+
+@keyframes boot-track {
+  from {
+    opacity: 0;
+    letter-spacing: 0.6em;
+    filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.18em;
+    filter: blur(0);
+  }
+}
+
+.boot-rule {
+  position: relative;
+  height: 1px;
+  margin: var(--s-4) 0 var(--s-5);
+  overflow: hidden;
+  background: var(--rule-hi);
+  animation: boot-widen 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+}
+
+@keyframes boot-widen {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* The heartbeat: a bright segment travelling the rule. */
+.boot-sweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+  transform: translateX(-100%);
+  animation: boot-sweeper 1.5s cubic-bezier(0.5, 0, 0.5, 1) 0.5s infinite;
+}
+
+@keyframes boot-sweeper {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.boot-list {
+  display: grid;
+  gap: 6px;
+}
+
+.boot-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto 20px;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  animation: boot-line 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes boot-line {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.boot-dots {
+  height: 1px;
+  align-self: center;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--rule-hi) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+.boot-value {
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+.boot-ok {
+  color: var(--up);
+  text-align: right;
+  animation: boot-line 0.3s ease-out both;
+}
+
+.boot-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dimmer);
+  animation: boot-line 0.4s ease-out 0.45s both;
+}
+
+.boot-pulse {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  flex: none;
+}
+
+.boot-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--amber);
+  animation: boot-ring 1.4s ease-out infinite;
+}
+
+@keyframes boot-ring {
+  from {
+    transform: scale(0.55);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.boot-meter {
+  flex: 1;
+  height: 2px;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.boot-meter i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--amber);
+  transform-origin: left;
+  animation: boot-fill 1.5s cubic-bezier(0.3, 0.6, 0.2, 1) 0.35s both;
+}
+
+@keyframes boot-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Anyone who asked for less motion gets the terminal immediately. */
+@media (prefers-reduced-motion: reduce) {
+  .boot {
+    animation: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 /* --- Signage type ------------------------------------------------------- */

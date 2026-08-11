@@ -81,6 +81,15 @@ export default async function RootLayout({
                     return themeValue;
                   };
 
+                  // The boot sequence plays once per session, so returning to
+                  // the terminal from an article doesn't replay it. Set before
+                  // first paint to avoid a flash of the overlay.
+                  if (sessionStorage.getItem('booted')) {
+                    root.setAttribute('data-booted', '1');
+                  } else {
+                    sessionStorage.setItem('booted', '1');
+                  }
+
                   // Apply saved theme
                   const savedTheme = localStorage.getItem('data-theme');
                   const resolvedTheme = resolveTheme(savedTheme);

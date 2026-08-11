@@ -1,4 +1,5 @@
 import { Meta, Schema } from "@once-ui-system/core";
+import { BootSequence } from "@/components/terminal/BootSequence";
 import { Terminal } from "@/components/terminal/Terminal";
 import { about, baseURL, canonical, home, person } from "@/resources";
 
@@ -30,6 +31,7 @@ export default function Home() {
         }}
       />
       <Terminal />
+      <BootSequence />
     </>
   );
 }
