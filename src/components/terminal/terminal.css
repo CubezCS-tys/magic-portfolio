@@ -202,44 +202,50 @@
   }
 }
 
-/* Each half is wiped outward from its inner edge — the edge touching the dot
-   — so it reads as extruded from that point. Translating the whole word
-   instead made the two halves collide over the dot mid-flight. */
+/* Each half sits in a box clipped to its own bounds; the text inside starts
+   parked entirely behind the dot and slides outward into view. The clip is
+   what stops the two halves ever crossing the origin — translating the whole
+   word instead made them collide over the dot. clip-path rather than
+   overflow:hidden because it doesn't disturb the baseline the dot aligns to. */
 .bm-word {
   display: inline-block;
-  animation-duration: 0.9s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  animation-delay: 0.26s;
+  clip-path: inset(0);
+}
+
+.bm-word i {
+  display: inline-block;
+  font-style: normal;
+  animation-duration: 1.35s;
+  /* Deliberately not an expo curve: those finish 80% of the travel in the
+     first quarter of the time, which is why the slide wasn't legible. */
+  animation-timing-function: cubic-bezier(0.25, 0.7, 0.25, 1);
+  animation-delay: 0.32s;
   animation-fill-mode: both;
 }
 
-.bm-a {
+.bm-a i {
   animation-name: bm-left;
 }
 
-.bm-b {
+.bm-b i {
   animation-name: bm-right;
 }
 
 @keyframes bm-left {
   from {
-    opacity: 0;
-    clip-path: inset(0 0 0 100%);
+    transform: translateX(100%);
   }
   to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
   }
 }
 
 @keyframes bm-right {
   from {
-    opacity: 0;
-    clip-path: inset(0 100% 0 0);
+    transform: translateX(-100%);
   }
   to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
   }
 }
 

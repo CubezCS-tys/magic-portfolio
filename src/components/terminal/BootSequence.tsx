@@ -40,9 +40,13 @@ export function BootSequence() {
     >
       <div className="boot-inner">
         <div className="boot-mark">
-          <span className="bm-word bm-a">Soltani</span>
+          <span className="bm-word bm-a">
+            <i>Soltani</i>
+          </span>
           <em className="bm-dot">·</em>
-          <span className="bm-word bm-b">Terminal</span>
+          <span className="bm-word bm-b">
+            <i>Terminal</i>
+          </span>
         </div>
 
         <div className="boot-rule">
