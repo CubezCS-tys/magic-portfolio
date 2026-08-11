@@ -49,11 +49,11 @@ export function BootSequence() {
 
         <ul className="boot-list">
           {CHECKS.map((c, i) => (
-            <li key={c.label} style={{ animationDelay: `${0.5 + i * 0.09}s` }}>
+            <li key={c.label} style={{ animationDelay: `${0.65 + i * 0.17}s` }}>
               <span className="boot-label">{c.label}</span>
               <span className="boot-dots" />
               <span className="boot-value">{c.value}</span>
-              <span className="boot-ok" style={{ animationDelay: `${0.72 + i * 0.09}s` }}>
+              <span className="boot-ok" style={{ animationDelay: `${0.95 + i * 0.17}s` }}>
                 OK
               </span>
             </li>
@@ -62,7 +62,10 @@ export function BootSequence() {
 
         <div className="boot-foot">
           <span className="boot-pulse" />
-          <span className="boot-status">Opening session</span>
+          <span className="boot-status">
+            <i>Opening session</i>
+            <b>Session open</b>
+          </span>
           <span className="boot-meter">
             <i />
           </span>

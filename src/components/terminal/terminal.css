@@ -136,7 +136,7 @@
   color: var(--ink);
   font-family: var(--mono);
   font-variant-numeric: tabular-nums;
-  animation: boot-out 0.55s cubic-bezier(0.4, 0, 0.2, 1) 1.9s forwards;
+  animation: boot-out 0.6s cubic-bezier(0.4, 0, 0.2, 1) 2.85s forwards;
 }
 
 /* Replayed only once per session; the head script sets this flag. */
@@ -169,7 +169,7 @@
   color: var(--ink-hi);
   text-align: center;
   /* Tracking in from wide-and-blurred is the whole "powering up" gesture. */
-  animation: boot-track 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: boot-track 1.05s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .boot-mark em {
@@ -196,7 +196,7 @@
   margin: var(--s-4) 0 var(--s-5);
   overflow: hidden;
   background: var(--rule-hi);
-  animation: boot-widen 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+  animation: boot-widen 0.55s cubic-bezier(0.4, 0, 0.2, 1) 0.35s both;
 }
 
 @keyframes boot-widen {
@@ -214,7 +214,7 @@
   inset: 0;
   background: linear-gradient(90deg, transparent, var(--amber), transparent);
   transform: translateX(-100%);
-  animation: boot-sweeper 1.5s cubic-bezier(0.5, 0, 0.5, 1) 0.5s infinite;
+  animation: boot-sweeper 1.75s cubic-bezier(0.5, 0, 0.5, 1) 0.55s infinite;
 }
 
 @keyframes boot-sweeper {
@@ -237,7 +237,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--dim);
-  animation: boot-line 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: boot-line 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 @keyframes boot-line {
@@ -282,7 +282,33 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--dimmer);
-  animation: boot-line 0.4s ease-out 0.45s both;
+  animation: boot-line 0.45s ease-out 0.6s both;
+}
+
+.boot-status {
+  display: grid;
+}
+
+.boot-status > * {
+  grid-area: 1 / 1;
+  font-style: normal;
+  font-weight: inherit;
+  white-space: nowrap;
+}
+
+.boot-status i {
+  animation: boot-hide 0.28s ease 2.5s both;
+}
+
+.boot-status b {
+  color: var(--up);
+  animation: boot-line 0.28s ease 2.58s both;
+}
+
+@keyframes boot-hide {
+  to {
+    opacity: 0;
+  }
 }
 
 .boot-pulse {
@@ -292,6 +318,13 @@
   border-radius: 50%;
   background: var(--amber);
   flex: none;
+  animation: boot-settle 0.28s ease 2.5s both;
+}
+
+@keyframes boot-settle {
+  to {
+    background: var(--up);
+  }
 }
 
 .boot-pulse::after {
@@ -300,7 +333,7 @@
   inset: -4px;
   border-radius: 50%;
   border: 1px solid var(--amber);
-  animation: boot-ring 1.4s ease-out infinite;
+  animation: boot-ring 1.5s ease-out infinite;
 }
 
 @keyframes boot-ring {
@@ -327,7 +360,7 @@
   width: 100%;
   background: var(--amber);
   transform-origin: left;
-  animation: boot-fill 1.5s cubic-bezier(0.3, 0.6, 0.2, 1) 0.35s both;
+  animation: boot-fill 2.15s cubic-bezier(0.3, 0.6, 0.2, 1) 0.5s both;
 }
 
 @keyframes boot-fill {
