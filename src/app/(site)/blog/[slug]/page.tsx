@@ -4,7 +4,7 @@ import { Meta, Schema } from "@once-ui-system/core";
 import { Doc } from "@/components/terminal/Doc";
 import { DocShell } from "@/components/terminal/DocShell";
 import { ScrollToHash } from "@/components";
-import { about, baseURL, blog, person } from "@/resources";
+import { about, baseURL, canonical, blog, person } from "@/resources";
 import { getPosts } from "@/utils/utils";
 
 const DIR = ["src", "app", "(site)", "blog", "posts"];
@@ -27,13 +27,14 @@ export async function generateMetadata({
   const post = getPosts(DIR).find((p) => p.slug === slug);
   if (!post) return {};
 
-  return Meta.generate({
+  const meta = await Meta.generate({
     title: post.metadata.title,
     description: post.metadata.summary,
     baseURL: baseURL,
     image: post.metadata.image || "/images/og/terminal.png",
     path: `${blog.path}/${post.slug}`,
   });
+  return { ...meta, alternates: { canonical: canonical(`${blog.path}/${post.slug}`) } };
 }
 
 export default async function BlogPost({

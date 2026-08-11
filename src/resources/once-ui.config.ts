@@ -13,8 +13,11 @@ import {
 } from "@/types";
 import { home } from "./index";
 
-// IMPORTANT: Replace with your own domain address - it's used for SEO in meta tags and schema
-const baseURL: string = "https://demo.magic-portfolio.com";
+// Used for canonical URLs, OG tags, the sitemap and JSON-LD.
+const baseURL: string = "https://yassinesoltani.dev";
+
+/** Absolute canonical URL, without the trailing slash on the home route. */
+const canonical = (path: string): string => `${baseURL}${path === "/" ? "" : path}`;
 
 const routes: RoutesConfig = {
   "/": true,
@@ -215,20 +218,20 @@ const mailchimp: MailchimpConfig = {
   },
 };
 
-// default schema data
+// JSON-LD identity. A person, not an organisation.
 const schema: SchemaConfig = {
-  logo: "",
-  type: "Organization",
-  name: "Once UI",
+  logo: `${baseURL}/images/og/terminal.png`,
+  type: "Person",
+  name: "Tahar Yassine Soltani",
   description: home.description,
-  email: "lorant@once-ui.com",
+  email: "ysolta1969@gmail.com",
 };
 
-// social links
+// Profiles claimed as the same entity in structured data.
 const sameAs: SameAsConfig = {
-  threads: "https://www.threads.com/@once_ui",
-  linkedin: "https://www.linkedin.com/company/once-ui/",
-  discord: "https://discord.com/invite/5EyAQ4eNdS",
+  threads: "",
+  linkedin: "https://www.linkedin.com/in/yassine-soltani-1615b620b/",
+  discord: "",
 };
 
 // social sharing configuration for blog posts
@@ -253,6 +256,7 @@ export {
   routes,
   protectedRoutes,
   baseURL,
+  canonical,
   fonts,
   terminalFonts,
   style,

@@ -1,15 +1,16 @@
 import { Meta, Schema } from "@once-ui-system/core";
 import { Terminal } from "@/components/terminal/Terminal";
-import { about, baseURL, home, person } from "@/resources";
+import { about, baseURL, canonical, home, person } from "@/resources";
 
 export async function generateMetadata() {
-  return Meta.generate({
+  const meta = await Meta.generate({
     title: home.title,
     description: home.description,
     baseURL: baseURL,
     path: home.path,
     image: home.image,
   });
+  return { ...meta, alternates: { canonical: canonical(home.path) } };
 }
 
 export default function Home() {

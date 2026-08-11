@@ -1,16 +1,17 @@
 import { Meta, Schema } from "@once-ui-system/core";
 import { Archive } from "@/components/terminal/Archive";
 import { DocShell } from "@/components/terminal/DocShell";
-import { baseURL, blog, person } from "@/resources";
+import { baseURL, canonical, blog, person } from "@/resources";
 
 export async function generateMetadata() {
-  return Meta.generate({
+  const meta = await Meta.generate({
     title: blog.title,
     description: blog.description,
     baseURL: baseURL,
     image: "/images/og/terminal.png",
     path: blog.path,
   });
+  return { ...meta, alternates: { canonical: canonical(blog.path) } };
 }
 
 export default function Blog() {

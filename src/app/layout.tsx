@@ -9,13 +9,14 @@ import { Providers } from "@/components";
 import { baseURL, fonts, terminalFonts, style, dataStyle, home } from "@/resources";
 
 export async function generateMetadata() {
-  return Meta.generate({
+  const meta = await Meta.generate({
     title: home.title,
     description: home.description,
     baseURL: baseURL,
     path: home.path,
     image: home.image,
   });
+  return meta;
 }
 
 /**
