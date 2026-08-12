@@ -154,15 +154,21 @@ export function Pricer() {
     // lucky path can otherwise stretch the axis until the barrier — the whole
     // point of the picture — is crushed into the bottom of the canvas.
     const vals: number[] = [];
-    for (const path of mc.sample) for (const v of path.points) vals.push(v);
+    for (const path of mc.sample) {
+      const last = path.knockedOut ? path.outAt : path.points.length - 1;
+      for (let i = 0; i <= last; i++) vals.push(path.points[i]);
+    }
     vals.sort((a, b) => a - b);
     const q = (f: number) => vals[Math.min(vals.length - 1, Math.floor(f * vals.length))];
 
-    let lo = Math.min(q(0.01), dp.B, dp.K, dp.S);
+    // Quantile at the top so a single lucky path can't stretch the axis, and
+    // a floor pinned just under the barrier so the knock-out zone isn't a
+    // band of empty canvas.
+    let lo = Math.min(q(0.004), dp.B * 0.97);
     let hi = Math.max(q(0.98), dp.K, dp.S);
     const span = hi - lo || 1;
-    lo -= span * 0.06;
-    hi += span * 0.06;
+    lo -= span * 0.02;
+    hi += span * 0.05;
 
     const X = (i: number) => (i / STEPS) * plotW;
     const Y = (v: number) => h - ((v - lo) / (hi - lo)) * h;
@@ -197,7 +203,7 @@ export function Pricer() {
       // Paths first, so the reference levels sit on top of them.
       for (const path of mc.sample) {
         const end = path.knockedOut ? Math.min(path.outAt, cut) : cut;
-        ctx.strokeStyle = path.knockedOut ? "rgba(255,77,94,0.42)" : "rgba(38,208,124,0.34)";
+        ctx.strokeStyle = path.knockedOut ? "rgba(255,77,94,0.5)" : "rgba(38,208,124,0.2)";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(X(0), Y(path.points[0]));
@@ -225,6 +231,7 @@ export function Pricer() {
         ctx.fillText(text, 6, y - 8);
       };
 
+      level(dp.S, "#9aa7b4", `SPOT ${dp.S}`, [1, 5]);
       level(dp.K, "#9aa7b4", `K ${dp.K}`, [2, 3]);
       level(dp.B, "#ffb020", `BARRIER ${dp.B}`, [5, 4]);
     };

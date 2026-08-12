@@ -27,6 +27,9 @@
   --dim: var(--text-3);
   --dimmer: var(--text-3);
 
+  --amber-rgb: 255 176 32;
+  --up-rgb: 38 208 124;
+  --down-rgb: 255 77 94;
   --amber: #ffb020;
   --amber-soft: rgba(255, 176, 32, 0.14);
   --amber-line: rgba(255, 176, 32, 0.35);
@@ -930,6 +933,29 @@
   }
 }
 
+.cx-price,
+.cx-time {
+  position: absolute;
+  z-index: 2;
+  padding: 1px 5px;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  color: var(--void);
+  background: var(--amber);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.cx-price {
+  right: 2px;
+  transform: translateY(-50%);
+}
+
+.cx-time {
+  bottom: 2px;
+  transform: translateX(-50%);
+}
+
 /* --- Instrument detail -------------------------------------------------- */
 
 .inst-head {
@@ -1051,7 +1077,7 @@
 
 .chart-note {
   position: absolute;
-  right: 56px;
+  left: 12px;
   top: 8px;
   font-size: var(--fs-micro);
   letter-spacing: 0.12em;
@@ -1222,12 +1248,17 @@
   isolation: isolate;
 }
 
-/* The bar is the row background, filled right-to-left like book depth. */
-.book-bar {
+/* Track gives every bar the same right boundary, clear of the value column. */
+.book-track {
   position: absolute;
-  inset: 0 auto 0 0;
+  inset: 0 46px 0 0;
   z-index: -1;
-  background: var(--amber-soft);
+}
+
+.book-track i {
+  display: block;
+  height: 100%;
+  background: rgb(var(--amber-rgb) / 0.18);
   border-right: 1px solid var(--amber-line);
 }
 

@@ -637,7 +637,7 @@ export function Terminal() {
           <section className="pnl" ref={panels.book} aria-labelledby="h-book">
             <div className="pnl-h">
               <h2 id="h-book">Book</h2>
-              <span className="sub">BSc marks</span>
+              <span className="sub">BSc marks · scaled 70–100</span>
               <span className="pnl-code">EDU&lt;GO&gt;</span>
             </div>
             <div className="pnl-b flush">
@@ -645,17 +645,15 @@ export function Terminal() {
                 <div className="book-row" key={row.module}>
                   {/* Scaled from 70, not 0 — every mark here is a first, so a
                       0-100 bar makes 80 and 98 look identical. */}
-                  <span
-                    className="book-bar"
-                    style={{ width: `${((row.mark - 70) / 30) * 100}%` }}
-                    aria-hidden="true"
-                  />
+                  <span className="book-track" aria-hidden="true">
+                    <i style={{ width: `${((row.mark - 70) / 30) * 100}%` }} />
+                  </span>
                   <span>{row.module}</span>
                   <span className="book-mark">{row.mark}</span>
                 </div>
               ))}
               <p className="book-foot">
-                Brunel · average 82% · First Class Honours · bars scaled 70–100
+                Brunel University London · average 82% · First Class Honours
               </p>
             </div>
           </section>

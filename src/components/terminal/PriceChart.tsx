@@ -195,6 +195,20 @@ export function PriceChart({ bars, mode, tone, height = 220, label }: Props) {
         )}
       </svg>
 
+      {hover !== null && (
+        <>
+          <span className="cx-price" style={{ top: geo.y(visible[idx].c) }}>
+            {fmt(visible[idx].c)}
+          </span>
+          <span
+            className="cx-time"
+            style={{ left: `calc(${geo.x(idx) / 1000} * (100% - 48px))` }}
+          >
+            T−{visible.length - 1 - idx}
+          </span>
+        </>
+      )}
+
       <div className="chart-axis" aria-hidden="true">
         {geo.ticks.map((t) => (
           <span key={t.v} style={{ top: t.y }}>
