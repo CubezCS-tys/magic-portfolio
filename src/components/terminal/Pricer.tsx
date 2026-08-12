@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { bsCallGreeks, downAndOutCall, fmt, mcDownAndOutCall } from "./quant";
+import { Num } from "./Num";
 
 type Params = {
   S: number;
@@ -198,20 +199,37 @@ export function Pricer() {
         ctx.fillText(v.toFixed(0), plotW + 8, y);
       }
 
-      const cut = Math.max(1, Math.round(STEPS * progress));
+      // The whole cone is always present at low alpha; a bright wavefront
+      // sweeps along it so the panel reads as a simulation that is still
+      // running rather than a plot that finished.
+      const head = progress * STEPS;
+      const BAND = 20;
 
-      // Paths first, so the reference levels sit on top of them.
       for (const path of mc.sample) {
-        const end = path.knockedOut ? Math.min(path.outAt, cut) : cut;
-        ctx.strokeStyle = path.knockedOut ? "rgba(255,77,94,0.5)" : "rgba(38,208,124,0.2)";
+        const end = path.knockedOut ? path.outAt : STEPS;
+        const ko = path.knockedOut;
+
+        ctx.strokeStyle = ko ? "rgba(255,77,94,0.22)" : "rgba(38,208,124,0.11)";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(X(0), Y(path.points[0]));
         for (let i = 1; i <= end; i++) ctx.lineTo(X(i), Y(path.points[i]));
         ctx.stroke();
 
-        if (path.knockedOut && path.outAt <= cut) {
-          ctx.fillStyle = "#ff4d5e";
+        const b0 = Math.max(0, Math.floor(head - BAND));
+        const b1 = Math.min(end, Math.floor(head));
+        if (b1 > b0) {
+          ctx.strokeStyle = ko ? "rgba(255,77,94,0.85)" : "rgba(38,208,124,0.6)";
+          ctx.beginPath();
+          ctx.moveTo(X(b0), Y(path.points[b0]));
+          for (let i = b0 + 1; i <= b1; i++) ctx.lineTo(X(i), Y(path.points[i]));
+          ctx.stroke();
+        }
+
+        // Knock-out markers light up as the wavefront reaches them.
+        if (ko) {
+          const reached = head >= path.outAt;
+          ctx.fillStyle = reached ? "#ff4d5e" : "rgba(255,77,94,0.3)";
           ctx.fillRect(X(path.outAt) - 1.5, Y(path.points[path.outAt]) - 1.5, 3, 3);
         }
       }
@@ -241,14 +259,35 @@ export function Pricer() {
       return;
     }
 
+    // Runs continuously rather than once. Paused while the tab is hidden so
+    // it isn't burning a phone battery in a background tab.
+    const PERIOD = 4200;
+    let running = true;
+
     const tick = (ts: number) => {
       if (!start) start = ts;
-      const t = Math.min(1, (ts - start) / 620);
-      draw(t * t * (3 - 2 * t)); // smoothstep
-      if (t < 1) raf = requestAnimationFrame(tick);
+      draw(((ts - start) % PERIOD) / PERIOD);
+      if (running) raf = requestAnimationFrame(tick);
     };
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        running = false;
+        cancelAnimationFrame(raf);
+      } else if (!running) {
+        running = true;
+        start = 0;
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      running = false;
+      document.removeEventListener("visibilitychange", onVisibility);
+      cancelAnimationFrame(raf);
+    };
   }, [mc, dp.B, dp.K, dp.S, size]);
 
   const maxB = Math.max(20, Math.min(p.K, p.S) - 1);
@@ -379,7 +418,9 @@ export function Pricer() {
             <br />
             <span className="hero-sub">discrete · {STEPS} steps</span>
           </dt>
-          <dd>{fmt(mc.price, 4)}</dd>
+          <dd>
+            <Num value={mc.price} dp={4} ms={520} />
+          </dd>
         </div>
         <div className="out-row">
           <dt className="nw">95% CI</dt>
@@ -392,18 +433,21 @@ export function Pricer() {
         </div>
         <div className="out-row">
           <dt>Analytic barrier</dt>
-          <dd>{fmt(analytic, 4)}</dd>
+          <dd>
+            <Num value={analytic} dp={4} />
+          </dd>
         </div>
         <div className="out-row">
           <dt>Discretisation bias</dt>
           <dd className={bias >= 0 ? "up" : "down"}>
-            {bias >= 0 ? "+" : "−"}
-            {fmt(Math.abs(bias), 4)}
+            <Num value={bias} dp={4} sign />
           </dd>
         </div>
         <div className="out-row">
           <dt>Vanilla call</dt>
-          <dd>{fmt(vanilla.price, 4)}</dd>
+          <dd>
+            <Num value={vanilla.price} dp={4} />
+          </dd>
         </div>
         <div className="out-row">
           <dt>Greeks</dt>
@@ -416,7 +460,7 @@ export function Pricer() {
         <div className="out-row">
           <dt>Knock-out rate</dt>
           <dd className={mc.knockOutRate > 0.5 ? "down" : "flat"}>
-            {(mc.knockOutRate * 100).toFixed(1)}%
+            <Num value={mc.knockOutRate * 100} dp={1} suffix="%" />
           </dd>
         </div>
         <div className="out-row">

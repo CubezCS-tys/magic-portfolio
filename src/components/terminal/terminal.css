@@ -643,6 +643,62 @@
   background: var(--amber-soft);
 }
 
+/* --- HUD ----------------------------------------------------------------- */
+
+.xhair {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.xhair[data-live] {
+  opacity: 1;
+}
+
+.xhair-x,
+.xhair-y {
+  position: absolute;
+  background: rgb(var(--amber-rgb) / 0.22);
+  will-change: transform;
+}
+
+.xhair-x {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.xhair-y {
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+}
+
+.xhair-pos {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  color: rgb(var(--amber-rgb) / 0.55);
+}
+
+.vitals {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+}
+
+@media (max-width: 1180px) {
+  .vitals-cell {
+    display: none;
+  }
+}
+
 /* --- Tape --------------------------------------------------------------- */
 
 .tape {
@@ -1066,6 +1122,7 @@
 .chart-svg {
   display: block;
   width: 100%;
+  animation: asm-wipe 0.45s cubic-bezier(0.25, 0.8, 0.25, 1) both;
 }
 
 .chart-axis {
@@ -3201,6 +3258,7 @@
 }
 
 :root[data-assembled] .chart-wrap {
+  animation: none !important;
   clip-path: none !important;
 }
 

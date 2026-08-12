@@ -6,6 +6,8 @@ import type { Bar } from "./quant";
 import { fmt, gbmBars, signed, toCents } from "./quant";
 import type { ChartMode } from "./PriceChart";
 import { PriceChart } from "./PriceChart";
+import { Num } from "./Num";
+import { Crosshair, Vitals } from "./Hud";
 import { Pricer } from "./Pricer";
 import { TradeDesk } from "./TradeDesk";
 import { useTrading } from "./useTrading";
@@ -212,7 +214,7 @@ export function Terminal() {
   useEffect(() => {
     const id = setTimeout(
       () => document.documentElement.setAttribute("data-assembled", ""),
-      5200,
+      4700,
     );
     return () => clearTimeout(id);
   }, []);
@@ -434,6 +436,7 @@ export function Terminal() {
 
   return (
     <div className="trm">
+      <Crosshair />
       <div className="shell">
         {/* ---- top bar ---- */}
         <header className="topbar">
@@ -456,6 +459,9 @@ export function Terminal() {
           <div className="status">
             <span className="status-label">{profile.location}</span>
             <span suppressHydrationWarning>{clock ?? "--:--:--"}</span>
+          </div>
+          <div className="status vitals-cell">
+            <Vitals />
           </div>
           <nav className="topnav" aria-label="Sections">
             <a href={links.cv} target="_blank" rel="noopener noreferrer">
@@ -530,10 +536,10 @@ export function Terminal() {
                       className={`wl-px ${qq.flash ? `tick-${qq.flash}` : ""}`}
                       key={`${inst.ticker}-${qq.seq}`}
                     >
-                      {fmt(px)}
+                      <Num value={px} />
                     </span>
                     <span className={`wl-chg ${pct >= 0 ? "up" : "down"}`}>
-                      {signed(pct)}%
+                      <Num value={pct} sign />%
                     </span>
                     <span className="wl-name">{inst.name}</span>
                   </button>
@@ -612,10 +618,10 @@ export function Terminal() {
                   className={`inst-px ${q.flash ? `tick-${q.flash}` : ""}`}
                   key={`px-${instrument.ticker}-${q.seq}`}
                 >
-                  {fmt(last)}
+                  <Num value={last} />
                 </div>
                 <div className={`inst-chg ${chg >= 0 ? "up" : "down"}`}>
-                  {signed(chgAbs)} ({signed(chg)}%)
+                  <Num value={chgAbs} sign /> (<Num value={chg} sign />%)
                 </div>
               </div>
             </div>

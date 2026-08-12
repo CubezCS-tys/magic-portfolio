@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { Execution, Position, RestingOrder, Side } from "./engine";
 import { emptyPosition, makeBook, MAX_QTY, START_CASH, unrealized } from "./engine";
 import { fmt, signed } from "./quant";
+import { Num } from "./Num";
 import type { SubmitArgs, SubmitResult } from "./useTrading";
 
 type Props = {
@@ -251,15 +252,21 @@ export function TradeDesk({
         <dl className="risk-top">
           <div>
             <dt>Net liq</dt>
-            <dd>{fmt(nlv, 0)}</dd>
+            <dd>
+              <Num value={nlv} dp={0} ms={560} />
+            </dd>
           </div>
           <div>
             <dt>Session P&amp;L</dt>
-            <dd className={pnlClass(pnl)}>{signed(pnl, 0)}</dd>
+            <dd className={pnlClass(pnl)}>
+              <Num value={pnl} dp={0} sign ms={560} />
+            </dd>
           </div>
           <div>
             <dt>Return</dt>
-            <dd className={pnlClass(pnl)}>{signed((pnl / START_CASH) * 100, 2)}%</dd>
+            <dd className={pnlClass(pnl)}>
+              <Num value={(pnl / START_CASH) * 100} dp={2} sign suffix="%" ms={560} />
+            </dd>
           </div>
         </dl>
 
