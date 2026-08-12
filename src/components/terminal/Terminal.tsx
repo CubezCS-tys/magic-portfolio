@@ -35,12 +35,13 @@ const changePct = (q: Quote) => {
  * just picks a flattering draw rather than shipping whatever seed 1 gave.
  */
 function pickBars(inst: (typeof instruments)[number]): Bar[] {
-  const { base, drift, sigma, seed } = inst.sim;
+  const { base, drift, sigma, seed, target } = inst.sim;
+  const [lo, hi] = target;
   let fallback: Bar[] | null = null;
-  for (let k = 0; k < 500; k++) {
+  for (let k = 0; k < 4000; k++) {
     const b = gbmBars(base, drift, sigma, SESSIONS, seed + k * 7919);
     const chg = (b[b.length - 1].c - b[0].o) / b[0].o;
-    if (chg > 0.12 && chg < 0.55) return b;
+    if (chg > lo && chg < hi) return b;
     if (!fallback) fallback = b;
   }
   return fallback as Bar[];
@@ -479,6 +480,9 @@ export function Terminal() {
           <section className="pnl" ref={panels.watch} aria-labelledby="h-watch">
             <div className="pnl-h">
               <h2 id="h-watch">Watchlist</h2>
+              <span className="chip sim" title="Seeded simulation, not market data">
+                SIM
+              </span>
               <span className="sub">180d</span>
               <span className="pnl-code">MON&lt;GO&gt;</span>
             </div>

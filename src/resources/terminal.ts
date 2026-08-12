@@ -23,7 +23,14 @@ export type Instrument = {
   stack: string[];
   href?: string;
   /** Simulation parameters for the instrument chart. */
-  sim: { base: number; drift: number; sigma: number; seed: number };
+  sim: {
+    base: number;
+    drift: number;
+    sigma: number;
+    seed: number;
+    /** Session-change band the seed search aims for, as a fraction. */
+    target: [number, number];
+  };
 };
 
 const defs: Instrument[] = [
@@ -45,7 +52,7 @@ const defs: Instrument[] = [
       { label: "STAGE", value: "DESIGN", tone: "flat" },
     ],
     stack: ["Market microstructure", "Clearing", "Margin models", "RFQ design"],
-    sim: { base: 118.4, drift: 0.22, sigma: 0.31, seed: 8831 },
+    sim: { base: 118.4, drift: 0.22, sigma: 0.31, seed: 8831, target: [-0.075, -0.025] },
   },
   {
     ticker: "BARR",
@@ -67,7 +74,7 @@ const defs: Instrument[] = [
     ],
     stack: ["Python", "QuantLib", "NumPy", "SciPy", "Streamlit", "Crank–Nicolson"],
     href: "/work/pricing-barrier-options-research-computational-finance",
-    sim: { base: 204.75, drift: 0.34, sigma: 0.24, seed: 4417 },
+    sim: { base: 204.75, drift: 0.34, sigma: 0.24, seed: 4417, target: [0.055, 0.11] },
   },
   {
     ticker: "ALGO",
@@ -91,7 +98,7 @@ const defs: Instrument[] = [
     ],
     stack: ["Python", "Alpaca API", "Interactive Brokers", "SQL", "Kelly criterion", "Linux"],
     href: "/work/algorithmic-trading-engine",
-    sim: { base: 145.0, drift: 0.41, sigma: 0.19, seed: 1450 },
+    sim: { base: 145.0, drift: 0.41, sigma: 0.19, seed: 1450, target: [0.185, 0.245] },
   },
   {
     ticker: "RAG",
@@ -112,7 +119,7 @@ const defs: Instrument[] = [
       { label: "CORPUS", value: "millions", tone: "flat" },
     ],
     stack: ["Python", "FastAPI", "FAISS", "Qdrant", "OpenAI", "Gemini", "Docker", "Postgres"],
-    sim: { base: 92.3, drift: 0.28, sigma: 0.27, seed: 2309 },
+    sim: { base: 92.3, drift: 0.28, sigma: 0.27, seed: 2309, target: [0.28, 0.35] },
   },
 ];
 

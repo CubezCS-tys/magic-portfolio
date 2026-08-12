@@ -1014,6 +1014,11 @@
   color: var(--up);
   border-color: rgba(38, 208, 124, 0.4);
 }
+.chip.sim {
+  color: var(--amber);
+  border-color: var(--amber-line);
+}
+
 .chip.research {
   color: var(--amber);
   border-color: var(--amber-line);
