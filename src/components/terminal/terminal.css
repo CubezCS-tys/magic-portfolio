@@ -1019,6 +1019,92 @@
   transform: translateX(-50%);
 }
 
+/* --- Reticle & atmosphere ------------------------------------------------ */
+
+/* Corner brackets on the panel under the pointer. Targeting marks, drawn with
+   two gradients per corner so there's no extra markup. */
+.pnl {
+  position: relative;
+}
+
+.pnl::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  background:
+    linear-gradient(var(--amber), var(--amber)) 0 0 / 1px 12px no-repeat,
+    linear-gradient(var(--amber), var(--amber)) 0 0 / 12px 1px no-repeat,
+    linear-gradient(var(--amber), var(--amber)) 100% 0 / 1px 12px no-repeat,
+    linear-gradient(var(--amber), var(--amber)) 100% 0 / 12px 1px no-repeat,
+    linear-gradient(var(--amber), var(--amber)) 0 100% / 1px 12px no-repeat,
+    linear-gradient(var(--amber), var(--amber)) 0 100% / 12px 1px no-repeat,
+    linear-gradient(var(--amber), var(--amber)) 100% 100% / 1px 12px no-repeat,
+    linear-gradient(var(--amber), var(--amber)) 100% 100% / 12px 1px no-repeat;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pnl:hover::after {
+    opacity: 0.5;
+  }
+}
+
+/* A single faint band drifting down the whole terminal. Slow enough to read
+   as atmosphere rather than as something demanding attention. */
+.trm::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgb(var(--amber-rgb) / 0.035) 45%,
+    rgb(var(--amber-rgb) / 0.055) 50%,
+    rgb(var(--amber-rgb) / 0.035) 55%,
+    transparent 100%
+  );
+  background-size: 100% 46vh;
+  background-repeat: no-repeat;
+  animation: drift 11s linear infinite;
+}
+
+@keyframes drift {
+  from {
+    background-position: 0 -50vh;
+  }
+  to {
+    background-position: 0 150vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trm::after {
+    display: none;
+  }
+}
+
+/* The ticker letters snap in when the instrument changes. */
+.inst-sym h3 {
+  animation: sym-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes sym-in {
+  from {
+    opacity: 0;
+    letter-spacing: 0.5em;
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.04em;
+    filter: blur(0);
+  }
+}
+
 /* --- Instrument detail -------------------------------------------------- */
 
 .inst-head {

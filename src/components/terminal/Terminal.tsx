@@ -21,9 +21,14 @@ const TICKS_PER_BAR = 12;
 
 type Quote = {
   bars: Bar[];
+  /** Level the live tick reverts toward, so prices can't wander off. */
+  anchor: number;
   flash: "up" | "down" | null;
   seq: number;
 };
+
+/** Reversion speed per year for the live tick. Half-life ≈ 7 months. */
+const KAPPA = 1.2;
 
 /** Session change, measured across the window currently on the chart. */
 const changePct = (q: Quote) => {
@@ -52,7 +57,8 @@ function pickBars(inst: (typeof instruments)[number]): Bar[] {
 function initialQuotes(): Record<string, Quote> {
   const out: Record<string, Quote> = {};
   for (const inst of instruments) {
-    out[inst.ticker] = { bars: pickBars(inst), flash: null, seq: 0 };
+    const bars = pickBars(inst);
+    out[inst.ticker] = { bars, anchor: bars[bars.length - 1].c, flash: null, seq: 0 };
   }
   return out;
 }
@@ -125,6 +131,7 @@ export function Terminal() {
         ...prev,
         [ticker]: {
           bars: [...q.bars.slice(0, -1), live],
+          anchor: q.anchor,
           flash: frac >= 0 ? "up" : "down",
           seq: q.seq + 1,
         },
@@ -172,12 +179,14 @@ export function Terminal() {
           const q = prev[inst.ticker];
           const current = q.bars[q.bars.length - 1];
           const z = (Math.random() + Math.random() + Math.random() - 1.5) * 1.6;
+          // Ornstein-Uhlenbeck in log space rather than pure drift. Constant
+          // drift compounds without bound — over a working day the price ran
+          // to eleven times its opening level and kept going. Reverting to an
+          // anchor keeps it wandering plausibly forever.
+          const logDev = Math.log(current.c / q.anchor);
           const px = toCents(
             current.c *
-              Math.exp(
-                (inst.sim.drift - (inst.sim.sigma * inst.sim.sigma) / 2) * dt +
-                  inst.sim.sigma * Math.sqrt(dt) * z,
-              ),
+              Math.exp(-KAPPA * logDev * dt + inst.sim.sigma * Math.sqrt(dt) * z),
           );
           // The newest bar is the live session: its close moves and the wick
           // extends, the way an unfinished candle behaves on a real chart.
@@ -194,6 +203,7 @@ export function Terminal() {
             bars: rollover
               ? [...settled.slice(1), { o: px, h: px, l: px, c: px }]
               : settled,
+            anchor: q.anchor,
             flash: px >= current.c ? "up" : "down",
             seq: q.seq + 1,
           };
