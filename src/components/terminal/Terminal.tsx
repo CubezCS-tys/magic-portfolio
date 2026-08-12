@@ -70,6 +70,7 @@ export function Terminal() {
   const [openRow, setOpenRow] = useState<string | null>(positions[0].code);
   const [log, setLog] = useState<{ kind: "echo" | "out" | "err"; text: string }[]>([]);
   const [entry, setEntry] = useState("");
+  const [cmdOpen, setCmdOpen] = useState(false);
   const [clock, setClock] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -204,6 +205,12 @@ export function Terminal() {
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
   }, [log]);
+
+  // Candles need width the phone doesn't have. Set after mount so the server
+  // and client agree on the first render.
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 640px)").matches) setChartMode("line");
+  }, []);
 
   const scrollTo = useCallback((key: keyof typeof panels) => {
     panels[key].current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -541,6 +548,14 @@ export function Terminal() {
               {profile.bio.map((para) => (
                 <p key={para.slice(0, 32)}>{para}</p>
               ))}
+              <a
+                className="m-cta"
+                href={links.cv}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download CV ↗
+              </a>
               <div className="id-meta">
                 <span>{profile.location} · {profile.timezone}</span>
                 <span>{profile.interests}</span>
@@ -682,9 +697,7 @@ export function Terminal() {
               ))}
               <div className="stack-group">
                 <h3>Spoken</h3>
-                <p className="muted" style={{ fontSize: 11 }}>
-                  {profile.languages}
-                </p>
+                <p className="muted stack-spoken">{profile.languages}</p>
               </div>
             </div>
           </section>
@@ -793,13 +806,23 @@ export function Terminal() {
             ))}
           </div>
           <form
-            className="cmd-bar"
+            className={`cmd-bar${cmdOpen ? " open" : ""}`}
             onSubmit={(e) => {
               e.preventDefault();
               run(entry);
               setEntry("");
             }}
           >
+            <button
+              type="button"
+              className="cmd-toggle"
+              onClick={() => {
+                setCmdOpen(true);
+                requestAnimationFrame(() => inputRef.current?.focus());
+              }}
+            >
+              ⌘K · Command
+            </button>
             <span className="cmd-prompt" aria-hidden="true">
               {profile.handle} ›
             </span>

@@ -238,6 +238,14 @@ export function TradeDesk({
         </p>
       </div>
 
+      {/* Mobile stand-ins for the ladder and ticket, which are cut below 640px. */}
+      <div className="m-spread">
+        <span className="muted">Spread</span>
+        <b>{book.spread.toFixed(2)}</b>
+        <span className="muted">{((book.spread / book.mid) * 10000).toFixed(1)} bp</span>
+      </div>
+      <p className="m-note">The full trading terminal is available on desktop.</p>
+
       {/* ---- risk ---- */}
       <div className="risk">
         <dl className="risk-top">

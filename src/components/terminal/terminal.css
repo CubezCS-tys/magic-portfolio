@@ -1293,6 +1293,10 @@
   margin-bottom: 6px;
 }
 
+.stack-spoken {
+  font-size: var(--fs-micro);
+}
+
 .stack-tags {
   display: flex;
   flex-wrap: wrap;
@@ -1955,6 +1959,10 @@
   animation: pulse 0.9s ease-in-out infinite;
 }
 
+.hero-sub {
+  font-size: var(--fs-micro);
+}
+
 .out-row.hero {
   position: relative;
 }
@@ -1985,6 +1993,10 @@
   margin: 0;
   color: var(--ink-hi);
   white-space: nowrap;
+}
+
+.hero-sub {
+  font-size: var(--fs-micro);
 }
 
 .out-row.hero {
@@ -2695,7 +2707,14 @@
   .pr-out {
     grid-area: out;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Values must be allowed to wrap; nowrap in a floored track overflows the
+     document rather than the cell. */
+  .out-row dd,
+  .out-row dd.muted {
+    white-space: normal;
   }
   .pr-out .out-row {
     border-right: 1px solid var(--rule);
@@ -2814,6 +2833,181 @@
   }
 }
 
+
+/* ==========================================================================
+   Phone composition (<=640px)
+   Not a downscale of the three-rail desktop. The ladder, ticket and marks
+   chart are cut; identity leads; the chart becomes a line series; nothing
+   renders below 14px and every control clears a 44px tap target.
+   ========================================================================== */
+
+.m-spread,
+.m-note,
+.m-cta,
+.cmd-toggle {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* Mobile type scale. The desktop micro/data steps are 10 and 12px, which
+     are unreadable in the hand and below the 14px floor. */
+  .trm {
+    /* Base size too: anything inheriting rather than declaring would
+       otherwise sit at the desktop 12px and break the floor. */
+    font-size: 15px;
+    --fs-micro: 14px;
+    --fs-data: 15px;
+    --fs-body: 17px;
+    --fs-title: 26px;
+    --fs-display: 34px;
+  }
+
+  /* Who, before what. */
+  .a-lrail .pnl:nth-child(2) {
+    order: -1;
+  }
+
+  .trm a.m-cta,
+  .m-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 var(--s-4);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--void);
+    background: var(--amber);
+    border: 0;
+  }
+
+  .trm a.m-cta:hover {
+    border-bottom-color: transparent;
+  }
+
+  /* Tap targets */
+  .wl-row {
+    min-height: 56px;
+    padding: var(--s-2) var(--s-3);
+  }
+
+  .bl-row {
+    min-height: 56px;
+  }
+
+  .topnav a,
+  .cmd-chips button,
+  .seg button,
+  .toggles button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Cut what cannot work in the hand. */
+  .tkt,
+  .ladder,
+  .a-rrail .pnl:first-child {
+    display: none;
+  }
+
+  .m-spread {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    padding: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--fs-data);
+  }
+
+  .m-spread b {
+    font-family: var(--cond);
+    font-size: var(--fs-title);
+    font-weight: 600;
+    color: var(--ink-hi);
+  }
+
+  .m-note {
+    display: block;
+    padding: var(--s-3);
+    font-family: var(--sans);
+    font-size: var(--fs-data);
+    line-height: 1.5;
+    color: var(--text-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* Command bar collapses to one control. */
+  .cmd-bar .cmd-prompt,
+  .cmd-bar input,
+  .cmd-chips {
+    display: none;
+  }
+
+  .cmd-bar.open .cmd-prompt {
+    display: block;
+  }
+
+  .cmd-bar.open input {
+    display: block;
+  }
+
+  .cmd-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    width: 100%;
+    padding: 0 var(--s-3);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    border: 1px solid var(--amber-line);
+  }
+
+  .cmd-bar.open .cmd-toggle {
+    display: none;
+  }
+
+  /* The pricer's controls stack rather than sitting beside the canvas. */
+  .pr-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* One column, and values may wrap: the two-column auto-fit tracks have a
+     160px floor, so nowrap content painted outside its cell. */
+  .pr-out {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .out-row {
+    border-right: 0;
+  }
+
+  .out-row dd,
+  .out-row dd.muted {
+    white-space: normal;
+  }
+
+  .pr-legend {
+    position: static;
+    padding: var(--s-2) var(--s-3);
+    flex-wrap: wrap;
+  }
+
+  /* Venue and description should wrap rather than truncate in a list. */
+  .bl-desc,
+  .bl-venue,
+  .bl-dates {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+}
+
 /* --- Motion preferences ------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -2832,5 +3026,10 @@
 
   .tape {
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tape::-webkit-scrollbar {
+    display: none;
   }
 }

@@ -377,7 +377,7 @@ export function Pricer() {
           <dt>
             MC price
             <br />
-            <span style={{ fontSize: 9 }}>discrete · {STEPS} steps</span>
+            <span className="hero-sub">discrete · {STEPS} steps</span>
           </dt>
           <dd>{fmt(mc.price, 4)}</dd>
         </div>
