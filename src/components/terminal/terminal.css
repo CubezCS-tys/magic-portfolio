@@ -13,10 +13,19 @@
   --rule: #202634;
   --rule-hi: #303849;
 
-  --ink: #c9d1dc;
-  --ink-hi: #f2f5f9;
-  --dim: #6a7381;
-  --dimmer: #454d59;
+  /* Text ramp. Three steps, every one of them verified against the lightest
+     surface it sits on (--panel-hi), not against pure black. The brief's
+     #6b7885 measured 3.66:1 there and would have failed its own criterion. */
+  --text-1: #e8edf2; /* values, names, headlines      14.0:1 */
+  --text-2: #9aa7b4; /* body prose, descriptions       6.7:1 */
+  --text-3: #798897; /* labels, units, column headers  4.6:1 */
+
+  /* The old four-step scale collapses onto the ramp. --dimmer was 1.9:1 on
+     panel-hi — the single worst offender on the site. */
+  --ink-hi: var(--text-1);
+  --ink: var(--text-2);
+  --dim: var(--text-3);
+  --dimmer: var(--text-3);
 
   --amber: #ffb020;
   --amber-soft: rgba(255, 176, 32, 0.14);
@@ -2566,7 +2575,7 @@
 }
 
 .trm-foot .sep {
-  color: var(--rule-hi);
+  color: var(--text-3);
 }
 
 /* --- Responsive --------------------------------------------------------- */

@@ -172,7 +172,7 @@ export function Pricer() {
 
     const draw = (progress: number) => {
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = "#0e1116";
+      ctx.fillStyle = "#0d1015";
       ctx.fillRect(0, 0, w, h);
 
       // Price gridlines with a right-hand axis.
@@ -188,7 +188,7 @@ export function Pricer() {
         ctx.moveTo(0, y + 0.5);
         ctx.lineTo(plotW, y + 0.5);
         ctx.stroke();
-        ctx.fillStyle = "#454d59";
+        ctx.fillStyle = "#798897";
         ctx.fillText(v.toFixed(0), plotW + 8, y);
       }
 
@@ -225,7 +225,7 @@ export function Pricer() {
         ctx.fillText(text, 6, y - 8);
       };
 
-      level(dp.K, "#6a7381", `K ${dp.K}`, [2, 3]);
+      level(dp.K, "#9aa7b4", `K ${dp.K}`, [2, 3]);
       level(dp.B, "#ffb020", `BARRIER ${dp.B}`, [5, 4]);
     };
 
