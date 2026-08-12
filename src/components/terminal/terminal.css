@@ -1410,11 +1410,13 @@
   min-width: 0;
 }
 
+/* Flex column rather than grid: margin-top:auto on the trailing block has no
+   effect against grid's align-content:start. */
 .tkt {
   padding: 8px 12px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  align-content: start;
 }
 
 .tkt-side button.buy[aria-pressed="true"] {
@@ -1506,11 +1508,16 @@
   opacity: 0.8;
 }
 
+/* The desk row's height is set by the ladder, so the shorter columns left a
+   void at the bottom. Shrink-to-content would expose the grid gap colour as
+   grey blocks, so the trailing block of each column is pinned to the panel
+   floor instead — the slack becomes deliberate separation, as in .inst-foot. */
 .tkt-meta {
   display: flex;
   gap: 12px;
+  margin-top: auto;
   border-top: 1px solid var(--rule);
-  padding-top: 8px;
+  padding-top: 12px;
 }
 
 .tkt-meta dt {
@@ -1605,12 +1612,12 @@
 
 .lad-bar.bid {
   right: 0;
-  background: var(--up-soft);
+  background: rgb(var(--up-rgb) / 0.22);
 }
 
 .lad-bar.ask {
   left: 0;
-  background: var(--down-soft);
+  background: rgb(var(--down-rgb) / 0.22);
 }
 
 .lad-sz {
@@ -1755,6 +1762,10 @@
 
 .rt-row span:last-child {
   text-align: right;
+}
+
+.risk > .risk-tbl:last-of-type {
+  margin-top: auto;
 }
 
 .risk-empty {
