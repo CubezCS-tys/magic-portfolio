@@ -3038,6 +3038,179 @@
   }
 }
 
+
+/* ==========================================================================
+   Assembly
+   The boot overlay doesn't reveal a finished page — the terminal builds
+   itself. Hairlines strike first, then panels snap in on a stagger, the chart
+   wipes left to right, and the tape only starts rolling once everything is
+   standing.
+
+   Scoped to :root:not([data-booted]) so it plays once per session, on the
+   same flag the boot uses. Every rule uses fill-mode both, so if animations
+   never run the end state is what renders.
+   ========================================================================== */
+
+@keyframes asm-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asm-rules {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: var(--rule);
+  }
+}
+
+@keyframes asm-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+:root:not([data-booted]) .grid,
+:root:not([data-booted]) .rail,
+:root:not([data-booted]) .desk,
+:root:not([data-booted]) .pricer {
+  animation: asm-rules 0.4s linear 3.15s both;
+}
+
+:root:not([data-booted]) .topbar,
+:root:not([data-booted]) .tape,
+:root:not([data-booted]) .a-lrail,
+:root:not([data-booted]) .a-inst,
+:root:not([data-booted]) .a-rrail,
+:root:not([data-booted]) .a-desk,
+:root:not([data-booted]) .a-pricer,
+:root:not([data-booted]) .a-blotter,
+:root:not([data-booted]) .cmd,
+:root:not([data-booted]) .trm-foot {
+  /* Sharp, mechanical easing — a slow fade reads as a web page waking up,
+     a snap reads as hardware coming online. */
+  animation: asm-in 0.3s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+:root:not([data-booted]) .topbar {
+  animation-delay: 3.3s;
+}
+:root:not([data-booted]) .tape {
+  animation-delay: 3.42s;
+}
+:root:not([data-booted]) .a-lrail {
+  animation-delay: 3.5s;
+}
+:root:not([data-booted]) .a-inst {
+  animation-delay: 3.58s;
+}
+:root:not([data-booted]) .a-rrail {
+  animation-delay: 3.66s;
+}
+:root:not([data-booted]) .a-desk {
+  animation-delay: 3.74s;
+}
+:root:not([data-booted]) .a-pricer {
+  animation-delay: 3.82s;
+}
+:root:not([data-booted]) .a-blotter {
+  animation-delay: 3.9s;
+}
+:root:not([data-booted]) .cmd {
+  animation-delay: 3.98s;
+}
+:root:not([data-booted]) .trm-foot {
+  animation-delay: 4.06s;
+}
+
+/* Internal stagger — the panels don't arrive whole, they populate. */
+:root:not([data-booted]) .wl-row {
+  animation: asm-in 0.26s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+:root:not([data-booted]) .wl-row:nth-child(2) {
+  animation-delay: 3.62s;
+}
+:root:not([data-booted]) .wl-row:nth-child(3) {
+  animation-delay: 3.68s;
+}
+:root:not([data-booted]) .wl-row:nth-child(4) {
+  animation-delay: 3.74s;
+}
+:root:not([data-booted]) .wl-row:nth-child(5) {
+  animation-delay: 3.8s;
+}
+
+:root:not([data-booted]) .metric {
+  animation: asm-in 0.26s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+:root:not([data-booted]) .metric:nth-child(1) {
+  animation-delay: 3.68s;
+}
+:root:not([data-booted]) .metric:nth-child(2) {
+  animation-delay: 3.73s;
+}
+:root:not([data-booted]) .metric:nth-child(3) {
+  animation-delay: 3.78s;
+}
+:root:not([data-booted]) .metric:nth-child(4) {
+  animation-delay: 3.83s;
+}
+:root:not([data-booted]) .metric:nth-child(5) {
+  animation-delay: 3.88s;
+}
+
+/* The chart draws rather than appears. One rule covers candles and line
+   because it wipes the whole plot area, axis gutter included. */
+:root:not([data-booted]) .chart-wrap {
+  animation: asm-wipe 0.75s cubic-bezier(0.25, 0.8, 0.25, 1) 3.86s both;
+}
+
+/* The tape holds still until the desk is standing, then starts rolling. */
+:root:not([data-booted]) .tape-track {
+  animation-delay: 4.35s;
+}
+
+/* Safety net. The assembly holds the whole page at opacity 0 until ~3.2s, so
+   any failure to run the animation would show a blank terminal rather than a
+   plain one. A timer sets data-assembled shortly after the choreography ends
+   and force-reveals everything; in the normal case it changes nothing. */
+:root[data-assembled] .topbar,
+:root[data-assembled] .tape,
+:root[data-assembled] .a-lrail,
+:root[data-assembled] .a-inst,
+:root[data-assembled] .a-rrail,
+:root[data-assembled] .a-desk,
+:root[data-assembled] .a-pricer,
+:root[data-assembled] .a-blotter,
+:root[data-assembled] .cmd,
+:root[data-assembled] .trm-foot,
+:root[data-assembled] .wl-row,
+:root[data-assembled] .metric {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+:root[data-assembled] .chart-wrap {
+  clip-path: none !important;
+}
+
+:root[data-assembled] .grid,
+:root[data-assembled] .rail,
+:root[data-assembled] .desk,
+:root[data-assembled] .pricer {
+  background-color: var(--rule) !important;
+}
+
 /* --- Motion preferences ------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -3045,6 +3218,7 @@
   .trm *::before,
   .trm *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }

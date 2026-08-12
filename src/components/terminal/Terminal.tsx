@@ -206,6 +206,17 @@ export function Terminal() {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
   }, [log]);
 
+  // Backstop for the assembly choreography: it holds the page at opacity 0
+  // for the first few seconds, so guarantee a reveal even if the animation
+  // never runs. No-op in the normal case.
+  useEffect(() => {
+    const id = setTimeout(
+      () => document.documentElement.setAttribute("data-assembled", ""),
+      5200,
+    );
+    return () => clearTimeout(id);
+  }, []);
+
   // Candles need width the phone doesn't have. Set after mount so the server
   // and client agree on the first render.
   useEffect(() => {
