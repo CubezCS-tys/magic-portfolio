@@ -8,6 +8,8 @@ export type Metric = {
   label: string;
   value: string;
   tone?: "up" | "down" | "flat";
+  /** Shown under the figure where the direction of "good" isn't obvious. */
+  hint?: string;
 };
 
 export type Instrument = {
@@ -92,7 +94,7 @@ const defs: Instrument[] = [
     metrics: [
       { label: "SHARPE", value: "1.45", tone: "up" },
       { label: "SORTINO", value: "1.90", tone: "up" },
-      { label: "MAX DD", value: "12%", tone: "down" },
+      { label: "MAX DD", value: "12%", tone: "down", hint: "lower is better" },
       { label: "UNIVERSE", value: "500+", tone: "flat" },
       { label: "ROUTING", value: "<100ms", tone: "up" },
     ],

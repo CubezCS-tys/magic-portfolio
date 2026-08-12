@@ -597,7 +597,12 @@ export function Terminal() {
                 <p className="inst-thesis">{instrument.thesis}</p>
               </div>
               <div className="inst-quote">
-                <div className="inst-px">{fmt(last)}</div>
+                <div
+                  className={`inst-px ${q.flash ? `tick-${q.flash}` : ""}`}
+                  key={`px-${instrument.ticker}-${q.seq}`}
+                >
+                  {fmt(last)}
+                </div>
                 <div className={`inst-chg ${chg >= 0 ? "up" : "down"}`}>
                   {signed(chgAbs)} ({signed(chg)}%)
                 </div>
@@ -617,6 +622,7 @@ export function Terminal() {
                 <div className="metric" key={m.label}>
                   <dt>{m.label}</dt>
                   <dd className={m.tone ?? "flat"}>{m.value}</dd>
+                  {m.hint && <dd className="metric-hint">↓ {m.hint}</dd>}
                 </div>
               ))}
             </dl>
@@ -634,7 +640,7 @@ export function Terminal() {
                 </span>
               ))}
               {instrument.href && (
-                <a className="link-btn" href={instrument.href}>
+                <a className="link-btn primary" href={instrument.href}>
                   Full write-up →
                 </a>
               )}

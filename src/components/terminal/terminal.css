@@ -115,8 +115,13 @@
 }
 
 .trm :focus-visible {
-  outline: 1px solid var(--amber);
-  outline-offset: -1px;
+  outline: 2px solid var(--amber);
+  outline-offset: -2px;
+}
+
+.trm a:focus-visible,
+.trm button:focus-visible {
+  border-bottom-color: transparent;
 }
 
 .sr-only {
@@ -171,6 +176,8 @@
 
 .boot-inner {
   width: min(520px, 100%);
+  /* Optical centre sits above geometric centre; the block read as low. */
+  transform: translateY(-4vh);
 }
 
 .boot-mark {
@@ -419,7 +426,7 @@
 }
 
 .boot-meter {
-  flex: 1;
+  grid-column: 1 / -1;
   height: 2px;
   background: var(--rule);
   overflow: hidden;
@@ -1106,6 +1113,14 @@
   border-right: 0;
 }
 
+.metric-hint {
+  margin: 2px 0 0;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
 .metric dt {
   font-size: var(--fs-micro);
   letter-spacing: 0.13em;
@@ -1232,6 +1247,18 @@
   text-transform: uppercase;
   color: var(--amber);
   border: 1px solid var(--amber-line);
+}
+
+.trm a.link-btn.primary {
+  color: var(--void);
+  background: var(--amber);
+  border-color: var(--amber);
+  font-weight: 600;
+}
+
+.trm a.link-btn.primary:hover {
+  filter: brightness(1.12);
+  border-bottom-color: var(--amber);
 }
 
 .link-btn:hover {

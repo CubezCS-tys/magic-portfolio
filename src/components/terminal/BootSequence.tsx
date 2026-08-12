@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { instruments } from "@/resources/terminal";
 import { LEVELS } from "./engine";
 import { corpusSize } from "./retrieval";
@@ -28,6 +28,14 @@ const CHECKS: { label: string; value: string }[] = [
 export function BootSequence() {
   const ref = useRef<HTMLDivElement | null>(null);
   const skip = () => ref.current?.setAttribute("data-skip", "");
+
+  // Any key dismisses it, not just a click — the terminal is keyboard-driven
+  // and a visitor reaching for "/" shouldn't have to wait it out.
+  useEffect(() => {
+    const onKey = () => ref.current?.setAttribute("data-skip", "");
+    window.addEventListener("keydown", onKey, { once: true });
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <div
