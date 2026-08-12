@@ -479,13 +479,14 @@ export function Terminal() {
           <section className="pnl" ref={panels.watch} aria-labelledby="h-watch">
             <div className="pnl-h">
               <h2 id="h-watch">Watchlist</h2>
+              <span className="sub">180d</span>
               <span className="pnl-code">MON&lt;GO&gt;</span>
             </div>
             <div className="pnl-b flush">
               <div className="wl-head" aria-hidden="true">
                 <span>Symbol</span>
                 <span>Last</span>
-                <span style={{ textAlign: "right" }}>Chg 180d</span>
+                <span style={{ textAlign: "right" }}>Chg</span>
               </div>
               {instruments.map((inst, i) => {
                 const qq = quotes[inst.ticker];
