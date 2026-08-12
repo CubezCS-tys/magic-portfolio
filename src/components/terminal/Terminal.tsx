@@ -532,7 +532,7 @@ export function Terminal() {
             <div className="id-b">
               <div>
                 <div className="id-name">{profile.name}</div>
-                <div className="id-role">{profile.role}</div>
+                <div className="id-role">{profile.roleShort}</div>
               </div>
               {profile.bio.map((para) => (
                 <p key={para.slice(0, 32)}>{para}</p>

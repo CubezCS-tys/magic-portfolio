@@ -262,6 +262,8 @@ export const profile = {
   name: "Tahar Yassine Soltani",
   handle: "TYS",
   role: "Quantitative Developer · AI Engineer",
+  /* Rail-width variant; the long form stays in metadata and on /about. */
+  roleShort: "Quant Dev · AI Engineer",
   location: "London",
   timezone: "Europe/London",
   languages: "English (fluent) · French · Arabic",

@@ -375,7 +375,7 @@ export function Pricer() {
           <dd>{fmt(mc.price, 4)}</dd>
         </div>
         <div className="out-row">
-          <dt>95% CI</dt>
+          <dt className="nw">95% CI</dt>
           <dd>
             ±{fmt(1.96 * mc.stdError, 4)}{" "}
             <span className="muted">
@@ -399,9 +399,11 @@ export function Pricer() {
           <dd>{fmt(vanilla.price, 4)}</dd>
         </div>
         <div className="out-row">
-          <dt>Δ / Γ / ν</dt>
-          <dd className="muted">
-            {vanilla.delta.toFixed(3)} · {vanilla.gamma.toFixed(4)} · {vanilla.vega.toFixed(2)}
+          <dt>Greeks</dt>
+          <dd className="muted greeks">
+            <span>Δ {vanilla.delta.toFixed(3)}</span>
+            <span>Γ {vanilla.gamma.toFixed(4)}</span>
+            <span>ν {vanilla.vega.toFixed(2)}</span>
           </dd>
         </div>
         <div className="out-row">

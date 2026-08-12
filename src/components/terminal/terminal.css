@@ -450,6 +450,30 @@
   }
 }
 
+/* --- Wrapping ------------------------------------------------------------ */
+
+/* Narrow rails plus long labels were producing one-word final lines
+   throughout. Balance evens out headings; pretty prevents prose orphans. */
+.trm h1,
+.trm h2,
+.trm h3,
+.inst-thesis,
+.doc-title,
+.arch-title {
+  text-wrap: balance;
+}
+
+.trm p,
+.inst-copy p,
+.doc-body p,
+.rec-grid p {
+  text-wrap: pretty;
+}
+
+.nw {
+  white-space: nowrap;
+}
+
 /* --- Signage type ------------------------------------------------------- */
 
 .cond {
@@ -946,7 +970,7 @@
   margin-top: 6px;
   font-size: var(--fs-data);
   color: var(--dim);
-  max-width: 62ch;
+  max-width: 72ch;
 }
 
 .chip {
