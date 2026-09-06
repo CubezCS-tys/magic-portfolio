@@ -3435,12 +3435,11 @@
 .card-body > * {
   animation: c-rise 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
 }
-.card-body > *:nth-child(1) { animation-delay: 1.05s; }
-.card-body > *:nth-child(2) { animation-delay: 1.17s; }
-.card-body > *:nth-child(3) { animation-delay: 1.29s; }
-.card-body > *:nth-child(4) { animation-delay: 1.41s; }
-.card-body > *:nth-child(5) { animation-delay: 1.53s; }
-.card-body > *:nth-child(6) { animation-delay: 1.65s; }
+.card-body > *:nth-child(1) { animation-delay: 1.6s; }
+.card-body > *:nth-child(2) { animation-delay: 1.72s; }
+.card-body > *:nth-child(3) { animation-delay: 1.84s; }
+.card-body > *:nth-child(4) { animation-delay: 1.96s; }
+.card-body > *:nth-child(5) { animation-delay: 2.08s; }
 
 @keyframes c-rise {
   from {
@@ -3449,87 +3448,191 @@
   }
 }
 
-/* --- handshake ----------------------------------------------------------- */
+/* --- the entrance -------------------------------------------------------
+   Four beats. A reticle acquires and locks, a counter runs to 100, the stage
+   collapses into a seam of light, and the void parts along that seam. All of
+   it is CSS, so the shutter opens even if hydration never happens.
+   ------------------------------------------------------------------------ */
 
 .card-link {
   position: fixed;
   inset: 0;
   z-index: 60;
-  display: grid;
-  place-items: center;
+  animation: c-link-off 0.01s linear 2.1s forwards;
+}
+
+@keyframes c-link-off {
+  to { visibility: hidden; pointer-events: none; }
+}
+
+/* The two halves of the void. */
+.cl-shut {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
   background: var(--void);
-  animation: c-link-out 0.45s ease 1s forwards;
+  animation: var(--shut) 0.62s cubic-bezier(0.72, 0, 0.24, 1) 1.42s forwards;
 }
 
-.card-link[data-skip] {
-  animation: c-link-out 0.2s ease forwards;
+.cl-up { top: 0; --shut: c-shut-up; }
+.cl-dn { bottom: 0; --shut: c-shut-dn; }
+
+@keyframes c-shut-up { to { transform: translateY(-100%); } }
+@keyframes c-shut-dn { to { transform: translateY(100%); } }
+
+/* The seam they part along: draws across, holds, then thins away. */
+.cl-seam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: var(--amber);
+  box-shadow: 0 0 12px 1px rgb(var(--amber-rgb) / 0.7);
+  transform: translate(-50%, -50%);
+  animation: c-seam 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) 1.28s forwards;
 }
 
-@keyframes c-link-out {
-  to {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
+@keyframes c-seam {
+  35% { width: 100%; opacity: 1; }
+  100% { width: 100%; opacity: 0; }
 }
 
-.cl-inner {
-  position: relative;
-  display: grid;
-  place-items: center;
-  gap: var(--s-1);
-  text-align: center;
+/* ---- the reticle ---- */
+
+.cl-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 132px;
+  height: 132px;
+  margin: -66px 0 0 -66px;
+  animation: c-stage-out 0.3s ease 1.24s forwards;
+}
+
+@keyframes c-stage-out {
+  to { opacity: 0; transform: scale(0.82); }
 }
 
 .cl-ring {
-  width: 68px;
-  height: 68px;
-  margin-bottom: var(--s-3);
-  border: 1px solid var(--amber-line);
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  box-shadow: 0 0 0 0 rgb(var(--amber-rgb) / 0.35);
-  animation: c-ping 1.1s ease-out infinite;
+  border: 1px dashed var(--amber-line);
+  animation: c-ring-in 0.5s ease backwards, c-spin 5s linear 0.5s infinite;
 }
 
-@keyframes c-ping {
-  70% { box-shadow: 0 0 0 26px rgb(var(--amber-rgb) / 0); }
-  100% { box-shadow: 0 0 0 0 rgb(var(--amber-rgb) / 0); }
+/* The inner ring is solid, tighter and turns the other way — two dashed rings
+   spinning together just read as one blurry ring. */
+.cl-r2 {
+  inset: 22px;
+  border-style: solid;
+  border-color: rgb(var(--amber-rgb) / 0.22);
+  border-top-color: var(--amber);
+  animation: c-ring-in 0.5s ease 0.1s backwards, c-spin-r 1.6s linear 0.6s infinite;
 }
 
-.card .cl-a,
-.card .cl-b {
+@keyframes c-ring-in {
+  from { opacity: 0; transform: scale(1.5); }
+}
+
+@keyframes c-spin { to { transform: rotate(360deg); } }
+@keyframes c-spin-r { to { transform: rotate(-360deg); } }
+
+.cl-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: c-core 1.1s ease-out infinite;
+}
+
+@keyframes c-core {
+  0% { box-shadow: 0 0 0 0 rgb(var(--amber-rgb) / 0.5); }
+  70%, 100% { box-shadow: 0 0 0 30px rgb(var(--amber-rgb) / 0); }
+}
+
+/* Brackets fly in from off-stage and lock onto the corners. */
+.cl-lock {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--amber);
+  animation: c-lock 0.44s cubic-bezier(0.2, 1.3, 0.4, 1) 0.14s backwards;
+}
+
+.cl-tl { top: 0; left: 0; border-right: 0; border-bottom: 0; --fly: -20px, -20px; }
+.cl-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; --fly: 20px, -20px; }
+.cl-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; --fly: -20px, 20px; }
+.cl-br { bottom: 0; right: 0; border-left: 0; border-top: 0; --fly: 20px, 20px; }
+
+@keyframes c-lock {
+  from { opacity: 0; transform: translate(var(--fly)); }
+}
+
+/* Above the reticle, not inside it — at the centre it sat under the core. */
+.card .cl-pct {
+  position: absolute;
+  top: -34px;
+  left: 0;
+  right: 0;
+  text-align: center;
   font-size: var(--fs-micro);
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-}
-
-.card .cl-a {
+  font-weight: 400;
+  letter-spacing: 0.16em;
   color: var(--text-3);
 }
 
+/* ---- the two lines ---- */
+
+.card .cl-a,
 .card .cl-b {
-  color: var(--amber);
-  opacity: 0;
-  animation: c-fade 0.3s ease 0.5s forwards;
-}
-
-@keyframes c-fade {
-  to { opacity: 1; }
-}
-
-.cl-sweep {
   position: absolute;
-  left: -40%;
-  right: -40%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--amber), transparent);
-  animation: c-sweep 1s ease-in-out;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
 }
 
-@keyframes c-sweep {
-  from { transform: translateY(-60px); opacity: 0; }
-  50% { opacity: 1; }
-  to { transform: translateY(60px); opacity: 0; }
+.card .cl-a {
+  top: calc(50% + 88px);
+  color: var(--text-3);
+  animation: c-fade 0.3s ease 0.3s backwards, c-fade-out 0.25s ease 1.24s forwards;
+}
+
+/* Steps, not a fade — it lands like a stamp rather than a dissolve. */
+.card .cl-b {
+  top: calc(50% + 112px);
+  color: var(--amber);
+  animation: c-fade 0.2s steps(2) 0.98s backwards, c-fade-out 0.25s ease 1.24s forwards;
+}
+
+@keyframes c-fade { from { opacity: 0; } }
+@keyframes c-fade-out { to { opacity: 0; } }
+
+/* Skipping runs the same shutter, just immediately. */
+.card-link[data-skip] {
+  animation: c-link-off 0.01s linear 0.36s forwards;
+}
+
+.card-link[data-skip] .cl-stage,
+.card-link[data-skip] .cl-a,
+.card-link[data-skip] .cl-b,
+.card-link[data-skip] .cl-seam {
+  animation: none;
+  opacity: 0;
+}
+
+.card-link[data-skip] .cl-shut {
+  animation-delay: 0s;
+  animation-duration: 0.34s;
 }
 
 /* --- identity ------------------------------------------------------------ */
@@ -3613,6 +3716,13 @@
 
 @keyframes c-blink {
   50% { opacity: 0.25; }
+}
+
+/* While the name is resolving out of noise its glyphs are wider than the real
+   string, which would reflow the header as it lands. Clip for that moment. */
+.card h1.c-name[data-decoding] {
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .card h1.c-name {
@@ -3852,35 +3962,30 @@
   color: var(--text-2);
 }
 
-.card .c-about p + p {
-  margin-top: var(--s-3);
-}
-
-.c-vitals dl {
+/* Three figures on one line under the paragraph. The boxed grid they used to
+   sit in was a second panel competing with the quote strip for attention. */
+.c-vitals {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: var(--rule);
-  border: 1px solid var(--rule);
-}
-
-.c-vitals dl > div {
-  background: var(--panel);
-  padding: var(--s-3);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--rule);
 }
 
 .card .c-vitals dt {
   font-size: var(--fs-micro);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   color: var(--text-3);
 }
 
-/* Figures stay on the neutral ramp — the desk rule is that green and red
-   mean P&L, and a Sharpe printed green is decoration. */
+/* Figures stay on the neutral ramp — the desk rule is that green and red mean
+   P&L, and a Sharpe printed green is decoration. */
 .card .c-vitals dd {
   margin: var(--s-1) 0 0;
   font-family: var(--cond);
   font-size: var(--fs-title);
+  line-height: 1.1;
   color: var(--text-1);
 }
 
@@ -3965,25 +4070,27 @@
 @media (prefers-reduced-motion: reduce) {
   .card-body > *,
   .c-egg,
-  .c-hint {
-    animation: none;
-  }
-
+  .c-hint,
   .c-scan,
   .c-dot,
+  .c-egg-bar,
   .cl-ring,
-  .cl-sweep,
-  .c-egg-bar {
-    animation: none;
-  }
-
+  .cl-core,
+  .cl-lock,
+  .cl-stage,
+  .cl-seam,
+  .card .cl-a,
   .card .cl-b {
-    opacity: 1;
     animation: none;
   }
 
-  /* The overlay still has to clear itself — only the motion goes. */
+  /* The shutter still has to open — it is the only thing between the visitor
+     and the card. It just goes without the travel. */
+  .cl-shut {
+    animation: c-fade-out 0.2s linear 0.5s forwards;
+  }
+
   .card-link {
-    animation: c-link-out 0.01s linear 0.7s forwards;
+    animation: c-link-off 0.01s linear 0.75s forwards;
   }
 }

@@ -293,17 +293,14 @@ export const profile = {
  */
 export const card = {
   status: "AI engineer · retail options trader · MSc Financial Mathematics, KCL",
-  summary: [
-    "I build the computational side of finance — derivative pricers benchmarked against QuantLib, an event-driven equity trading engine, and retrieval infrastructure that holds up under load.",
-    "Currently contracting as a full-stack AI engineer while reading for an MSc at King's College London, after a First Class BSc in Mathematics with Computer Science.",
-    "I trade options retail, which is the shortest explanation for why the rest of this exists.",
-  ],
-  /** Headline figures. Deliberately four — a fifth stops being memorable. */
+  /* One paragraph. Whoever is reading this is standing in front of him. */
+  summary:
+    "I build the computational side of finance — derivative pricers benchmarked against QuantLib, an event-driven equity trading engine, and AI retrieval infrastructure. I also trade options retail, which is the shortest explanation for why the rest of it exists.",
+  /** Three figures, inline. A fourth stopped being memorable. */
   vitals: [
     { label: "SHARPE", value: "1.45" },
     { label: "MESH ACC", value: "+83%" },
     { label: "RETRIEVAL", value: "2.3×" },
-    { label: "BSc AVG", value: "82%" },
   ],
   /** Quote simulation for the TYS strip. Disclosed as a simulation on the page. */
   sim: { base: 145.2, drift: 0.32, sigma: 0.26, seed: 2609 },

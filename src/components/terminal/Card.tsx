@@ -40,6 +40,56 @@ function gaussian(rand: () => number): number {
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rand());
 }
 
+/**
+ * Text that resolves out of noise, like a callsign coming through.
+ *
+ * The final string is what renders on the server and on the first client
+ * paint, so nothing is hidden from a crawler or a screen reader; the scramble
+ * only ever runs after mount, and not at all if motion is unwelcome.
+ */
+const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ//<>[]{}#$%&*01";
+
+function useDecode(text: string, startMs: number, durMs: number): [string, boolean] {
+  const [out, setOut] = useState(text);
+  const [running, setRunning] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setRunning(true);
+
+    let raf = 0;
+    let t0 = 0;
+    // Each character locks in at its own moment, left to right, so the name
+    // resolves as a wave rather than all at once.
+    const locks = text.split("").map((_, i) => (i / text.length) * 0.72 + Math.random() * 0.2);
+
+    const step = (now: number) => {
+      if (!t0) t0 = now;
+      const p = (now - t0 - startMs) / durMs;
+      if (p >= 1) {
+        setRunning(false);
+        return setOut(text);
+      }
+      setOut(
+        text
+          .split("")
+          .map((ch, i) => {
+            if (ch === " ") return ch;
+            if (p > locks[i]) return ch;
+            return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          })
+          .join(""),
+      );
+      raf = requestAnimationFrame(step);
+    };
+
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [text, startMs, durMs]);
+
+  return [out, running];
+}
+
 type Side = "long" | "short";
 type Egg = { phase: "hidden" } | { phase: "armed" } | { phase: "open"; side: Side; entry: number; until: number } | { phase: "settled"; side: Side; entry: number; exit: number };
 
@@ -49,6 +99,8 @@ export function Card() {
   const [egg, setEgg] = useState<Egg>({ phase: "hidden" });
   const [hint, setHint] = useState(false);
   const [left, setLeft] = useState(0);
+  // Resolves just as the header block rises into view.
+  const [decoded, decoding] = useDecode(profile.name, 1150, 850);
 
   const px = series[series.length - 1];
   const open = series[0];
@@ -151,7 +203,9 @@ export function Card() {
               <span className="c-dot" aria-hidden="true" />
               {profile.handle} · VERIFIED
             </p>
-            <h1 className="c-name">{profile.name}</h1>
+            <h1 className="c-name" data-decoding={decoding || undefined}>
+              {decoded}
+            </h1>
           </div>
 
           {/* Status and location run the full width — in the column beside an
@@ -159,8 +213,7 @@ export function Card() {
           <p className="c-status">{card.status}</p>
           <p className="c-where">
             {profile.location} <span aria-hidden="true">·</span>{" "}
-            <time suppressHydrationWarning>{now ?? "--:--:--"}</time>{" "}
-            <span aria-hidden="true">·</span> {profile.languages}
+            <time suppressHydrationWarning>{now ?? "--:--:--"}</time>
           </p>
         </header>
 
@@ -247,15 +300,8 @@ export function Card() {
         </section>
 
         <section className="c-about">
-          <h2 className="c-h">WHO</h2>
-          {card.summary.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </section>
-
-        <section className="c-vitals" aria-label="Headline figures">
-          <h2 className="c-h">BOOK</h2>
-          <dl>
+          <p>{card.summary}</p>
+          <dl className="c-vitals" aria-label="Headline figures">
             {card.vitals.map((v) => (
               <div key={v.label}>
                 <dt>{v.label}</dt>
@@ -266,7 +312,6 @@ export function Card() {
         </section>
 
         <nav className="c-actions" aria-label="Contact">
-          <h2 className="c-h">CONNECT</h2>
           <a className="c-act c-primary" href={links.linkedin} target="_blank" rel="noreferrer">
             <span>LinkedIn</span>
             <i>yassine-soltani</i>
@@ -292,10 +337,7 @@ export function Card() {
           <a className="c-term" href="/">
             OPEN THE FULL TERMINAL <span aria-hidden="true">→</span>
           </a>
-          <p>
-            TYS is a simulated instrument — a seeded geometric Brownian motion, not a listed
-            security. Every figure above traces back to the CV.
-          </p>
+          <p>TYS is a simulation. Every other figure traces back to the CV.</p>
         </footer>
       </main>
     </div>
@@ -351,30 +393,70 @@ const ARRIVALS: Record<string, [string, string]> = {
 const ARRIVAL_DEFAULT: [string, string] = ["SESSION", "OPEN"];
 
 /**
- * The tap handshake. CSS-driven so it finishes even if hydration stalls, and
- * short — a second and a bit — because someone is watching over your shoulder.
+ * The entrance.
+ *
+ * Four beats over about two seconds: a reticle acquires and brackets lock,
+ * a counter runs to 100, the stage collapses to a seam of light, and the
+ * void splits along that seam like a shutter to reveal the card underneath.
+ *
+ * The shutter is CSS, so it opens even if hydration stalls or fails — only
+ * the counter needs JS, and it degrades to a static figure. A tap or any key
+ * skips straight to the end, because the person who handed you the card is
+ * standing right there.
  */
 function Handshake() {
   const host = useRef<HTMLDivElement | null>(null);
+  const pct = useRef<HTMLElement | null>(null);
   const [[lead, confirm], setArrival] = useState<[string, string]>(ARRIVAL_DEFAULT);
   const skip = () => host.current?.setAttribute("data-skip", "");
 
   useEffect(() => {
     const via = new URLSearchParams(window.location.search).get("ref");
-    // Lands well before the second line fades in at 0.5s, so the swap is unseen.
+    // Lands well before the second line appears, so the swap is unseen.
     if (via && ARRIVALS[via]) setArrival(ARRIVALS[via]);
     window.addEventListener("keydown", skip, { once: true });
     return () => window.removeEventListener("keydown", skip);
   }, []);
 
+  // The counter is eased, so it sprints and then hesitates on the last few —
+  // a linear ramp to 100 reads as a progress bar, which this is not.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let t0 = 0;
+    const step = (now: number) => {
+      if (!t0) t0 = now;
+      const p = Math.min(1, (now - t0) / 1150);
+      const v = Math.round((1 - (1 - p) ** 3) * 100);
+      if (pct.current) pct.current.textContent = String(v).padStart(3, "0");
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   return (
     <div className="card-link" ref={host} aria-hidden="true" role="presentation" onClick={skip}>
-      <div className="cl-inner">
-        <span className="cl-ring" />
-        <p className="cl-a">{lead}</p>
-        <p className="cl-b">{confirm}</p>
-        <span className="cl-sweep" />
+      {/* The two halves of the void, and the seam they part along. */}
+      <span className="cl-shut cl-up" />
+      <span className="cl-shut cl-dn" />
+      <span className="cl-seam" />
+
+      <div className="cl-stage">
+        <span className="cl-ring cl-r1" />
+        <span className="cl-ring cl-r2" />
+        <span className="cl-core" />
+        <span className="cl-lock cl-tl" />
+        <span className="cl-lock cl-tr" />
+        <span className="cl-lock cl-bl" />
+        <span className="cl-lock cl-br" />
+        <b className="cl-pct" ref={pct}>
+          100
+        </b>
       </div>
+
+      <p className="cl-a">{lead}</p>
+      <p className="cl-b">{confirm}</p>
     </div>
   );
 }
