@@ -283,3 +283,28 @@ export const profile = {
   ],
   interests: "Hackathons · speedcubing · market microstructure",
 };
+
+/**
+ * The NFC card at /card.
+ *
+ * Aluminium cards that open this page on tap, so the audience is someone
+ * standing in front of him at a networking event with the page in their hand.
+ * Everything here has to survive being read in about twenty seconds.
+ */
+export const card = {
+  status: "AI engineer · retail options trader · MSc Financial Mathematics, KCL",
+  summary: [
+    "I build the computational side of finance — derivative pricers benchmarked against QuantLib, an event-driven equity trading engine, and retrieval infrastructure that holds up under load.",
+    "Currently contracting as a full-stack AI engineer while reading for an MSc at King's College London, after a First Class BSc in Mathematics with Computer Science.",
+    "I trade options retail, which is the shortest explanation for why the rest of this exists.",
+  ],
+  /** Headline figures. Deliberately four — a fifth stops being memorable. */
+  vitals: [
+    { label: "SHARPE", value: "1.45" },
+    { label: "MESH ACC", value: "+83%" },
+    { label: "RETRIEVAL", value: "2.3×" },
+    { label: "BSc AVG", value: "82%" },
+  ],
+  /** Quote simulation for the TYS strip. Disclosed as a simulation on the page. */
+  sim: { base: 145.2, drift: 0.32, sigma: 0.26, seed: 2609 },
+};
